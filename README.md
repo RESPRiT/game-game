@@ -34,33 +34,11 @@ Output goes to `dist/` and is ready for deployment.
 
 ```
 ├── src/
-│   ├── sketch.ts     # p5.js sketch (game code)
+│   ├── main.ts       # Game entry point
 │   └── style.css     # Styles
 ├── index.html        # HTML entry
 ├── tsconfig.json     # TypeScript config
 └── package.json
-```
-
-## p5.js Basics
-
-The template uses p5.js in [instance mode](https://github.com/processing/p5.js/wiki/Global-and-instance-mode) with TypeScript:
-
-```ts
-import p5 from "p5";
-
-const sketch = (p: p5) => {
-    p.setup = () => {
-        p.createCanvas(336, 262);  // RCade dimensions
-    };
-
-    p.draw = () => {
-        p.background(26, 26, 46);
-        p.fill(255);
-        p.ellipse(p.width / 2, p.height / 2, 50, 50);
-    };
-};
-
-new p5(sketch, document.getElementById("sketch")!);
 ```
 
 ## Arcade Controls
@@ -83,10 +61,6 @@ if (PLAYER_1.B) { /* ... */ }
 // System
 if (SYSTEM.ONE_PLAYER) { /* Start game */ }
 ```
-
-## RCade Screen Size
-
-The RCade cabinet uses a 336x262 pixel display. The template is pre-configured with these dimensions.
 
 ## Deployment
 
