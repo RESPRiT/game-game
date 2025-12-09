@@ -1,0 +1,16 @@
+{
+  "$schema": "https://rcade.dev/manifest.schema.json",
+  "name": "game-game",
+  "display_name": "Game Game",
+  "description": "Game",
+  "visibility": "public",
+  "authors": {
+    "display_name": "Gamer"
+  },
+  "dependencies": [
+    {
+      "name": "@rcade/input-classic",
+      "version": "1.0.0"
+    }
+  ]
+}
