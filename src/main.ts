@@ -56,20 +56,22 @@ const platformState: {
   x: number;
   y: number;
   platformsInRiver: PlatformProps[];
-  canPlace: false;
+  canPlace: boolean;
 } = {
   velocityX: 0,
   velocityY: 0,
   x: 0,
   y: 0,
   platformsInRiver: [],
-  canPlace: false,
+  canPlace: true,
 };
 
+/// helper functions
 const clamp = (min: number, current: number, max: number) => {
   return Math.max(Math.min(current, max), min);
 };
 
+/// current functions
 const handleCurrent = () => {
   // handle spinner inputs
   const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta;
@@ -121,7 +123,25 @@ const handleCurrent = () => {
   currentState.flow = Math.min(Math.max(currentState.flow, 1), MAX_FLOW);
 };
 
+/// platform functions
+const cursorObserver = new IntersectionObserver(
+  (entries) => {
+    console.log(entries);
+
+    platformState.canPlace =
+      entries.filter(
+        (entry) => entry.isIntersecting && entry.target.className === "platform"
+      ).length === 0;
+  },
+  {
+    root: cursor,
+    threshold: 0,
+  }
+);
+
 const placePlatform = () => {
+  if (!platformState.canPlace) return;
+
   const newPlatform: PlatformProps = {
     x: 0,
     y: 0,
@@ -133,13 +153,14 @@ const placePlatform = () => {
 
   const platform = document.createElement("div");
   platform.style.transform = `translateX(${newPlatform.x}px) translateY(${newPlatform.y}px)`;
+  platform.className = "platform";
 
-  platforms.appendChild(platform);
+  cursor.appendChild(platform);
   platformState.platformsInRiver.push(newPlatform);
+  cursorObserver.observe(platform);
 };
 
 const handlePlatforms = () => {
-  //
   if (PLAYER_1.DPAD.up && PLAYER_2.DPAD.up) {
     platformState.velocityY -= CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.down && PLAYER_2.DPAD.down) {
@@ -167,8 +188,8 @@ const handlePlatforms = () => {
   );
 };
 
+/// update DOM
 const updateDOM = () => {
-  // update DOM
   current.style.transform = `translateX(${currentState.position}%)`;
   flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
 
@@ -176,30 +197,13 @@ const updateDOM = () => {
 };
 
 function update() {
-  //   if (!gameStarted) {
-  //     if (SYSTEM.ONE_PLAYER) {
-  //       gameStarted = true;
-  //       status.textContent = "Game Started!";
-  //     }
-  //   } else {
-  //     const inputs: string[] = [];
-  //     if (PLAYER_1.DPAD.up) inputs.push("↑");
-  //     if (PLAYER_1.DPAD.down) inputs.push("↓");
-  //     if (PLAYER_1.DPAD.left) inputs.push("←");
-  //     if (PLAYER_1.DPAD.right) inputs.push("→");
-  //     if (PLAYER_1.A) inputs.push("A");
-  //     if (PLAYER_1.B) inputs.push("B");
-
-  //     controls.textContent = inputs.length > 0 ? inputs.join(" ") : "-";
-  //   }
-
   handleCurrent();
   handlePlatforms();
   updateDOM();
 
   // debug
-  console.log(JSON.stringify(currentState));
-  console.log(JSON.stringify(platformState));
+  // console.log(JSON.stringify(currentState));
+  // console.log(JSON.stringify(platformState));
 
   requestAnimationFrame(update);
 }
