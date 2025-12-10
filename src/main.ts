@@ -25,7 +25,7 @@ const FLOW_FACTOR = 0.1;
 
 // multiply by this each frame to trend towards 0
 const DELOCITY_FACTOR = 0.95;
-const DECELLERATION_FACTOR = 0.98;
+const DECELERATION_FACTOR = 0.98;
 const DEFLOW_FACTOR = 0.95;
 
 const currentState = {
@@ -40,9 +40,12 @@ const currentState = {
 const CURSOR_SIZE = 50;
 const MAX_CURSOR_X = 252 - CURSOR_SIZE;
 const MAX_CURSOR_Y = 262 - CURSOR_SIZE;
-const CURSOR_STEP = 1;
+const CURSOR_ACCELERATION = 0.5;
+const CURSOR_DECELERATION = 0.95;
 
 const platformState = {
+  velocityX: 0,
+  velocityY: 0,
   x: 0,
   y: 0,
   platformsInRiver: [],
@@ -69,7 +72,7 @@ const handleCurrent = () => {
   );
 
   // acceleration "gravitates" towards 0
-  currentState.acceleration *= DECELLERATION_FACTOR;
+  currentState.acceleration *= DECELERATION_FACTOR;
 
   // velocity bounded by [-50, 50]
   currentState.velocity = Math.min(
@@ -107,19 +110,29 @@ const handleCurrent = () => {
 const handlePlatforms = () => {
   //
   if (PLAYER_1.DPAD.up && PLAYER_2.DPAD.up) {
-    platformState.y -= CURSOR_STEP;
+    platformState.velocityY -= CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.down && PLAYER_2.DPAD.down) {
-    platformState.y += CURSOR_STEP;
+    platformState.velocityY += CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.left && PLAYER_2.DPAD.left) {
-    platformState.x -= CURSOR_STEP;
+    platformState.velocityX -= CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.right) {
-    platformState.x += CURSOR_STEP;
+    platformState.velocityX += CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.left) {
   }
 
-  console.log(PLAYER_1.DPAD, PLAYER_2.DPAD);
-  platformState.x = clamp(0, platformState.x, MAX_CURSOR_X);
-  platformState.y = clamp(0, platformState.y, MAX_CURSOR_Y);
+  platformState.velocityX *= CURSOR_DECELERATION;
+  platformState.velocityY *= CURSOR_DECELERATION;
+
+  platformState.x = clamp(
+    0,
+    platformState.x + platformState.velocityX,
+    MAX_CURSOR_X
+  );
+  platformState.y = clamp(
+    0,
+    platformState.y + platformState.velocityY,
+    MAX_CURSOR_Y
+  );
 };
 
 const updateDOM = () => {
