@@ -18,7 +18,7 @@ let MAX_FLOW = 3;
 
 // how much rotating the spinner changes acceleration/flow
 let ACCELERATION_FACTOR = 0.01;
-let FLOW_FACTOR = 1;
+let FLOW_FACTOR = 0.1;
 
 // multiply by this each frame to trend towards 0
 let DELOCITY_FACTOR = 0.95;
