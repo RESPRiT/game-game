@@ -54,7 +54,7 @@ function update(timestamp: number) {
 
   //// current update logic
   // multiplier that is ~1 at 60fps
-  const rate = (timestamp - last) / ((1 / 60) * 1000);
+  const rate = 1; // (timestamp - last) / ((1 / 60) * 1000);
 
   // handle spinner inputs
   const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta * rate;
