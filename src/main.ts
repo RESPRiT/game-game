@@ -12,6 +12,7 @@ const flow = document.querySelector<HTMLDivElement>("#flow")!;
 let gameStarted = false;
 
 // bounds
+let MAX_POSITION = 300;
 let MAX_VELOCITY = 15;
 let MAX_ACCELERATION = 1;
 let MAX_FLOW = 3;
@@ -54,6 +55,7 @@ function update(timestamp: number) {
 
   //// current update logic
   // multiplier that is ~1 at 60fps
+  // JK - does not work on RCade
   const rate = 1; // (timestamp - last) / ((1 / 60) * 1000);
 
   // handle spinner inputs
@@ -87,18 +89,18 @@ function update(timestamp: number) {
   // position bounded by [0, 300]
   currentState.position = Math.min(
     Math.max(currentState.position + currentState.velocity, 0),
-    300
+    MAX_POSITION
   );
 
   // reset velocity + acceleration at edges
-  if (currentState.position === 0 || currentState.position === 300) {
+  if (currentState.position === 0 || currentState.position === MAX_POSITION) {
     currentState.velocity = 0;
     currentState.acceleration = 0;
   }
 
   // update flow - match spinner if spinning, otherwise trend to 1
 
-  if (flowSpinnerDelta !== 0) {
+  if (flowSpinnerDelta > 0) {
     currentState.flow += Math.max(
       0,
       (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 10
