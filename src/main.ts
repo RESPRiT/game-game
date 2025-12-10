@@ -9,6 +9,7 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 const current = document.querySelector<HTMLDivElement>("#current")!;
 const flow = document.querySelector<HTMLDivElement>("#flow")!;
 const cursor = document.querySelector<HTMLDivElement>("#cursor")!;
+const platforms = document.querySelector<HTMLDivElement>("#platforms")!;
 
 let gameStarted = false;
 
@@ -43,7 +44,20 @@ const MAX_CURSOR_Y = 262 - CURSOR_SIZE;
 const CURSOR_ACCELERATION = 0.5;
 const CURSOR_DECELERATION = 0.95;
 
-const platformState = {
+type PlatformProps = {
+  x: number;
+  y: number;
+  velocity: number;
+};
+
+const platformState: {
+  velocityX: number;
+  velocityY: number;
+  x: number;
+  y: number;
+  platformsInRiver: PlatformProps[];
+  canPlace: false;
+} = {
   velocityX: 0,
   velocityY: 0,
   x: 0,
@@ -107,6 +121,23 @@ const handleCurrent = () => {
   currentState.flow = Math.min(Math.max(currentState.flow, 1), MAX_FLOW);
 };
 
+const placePlatform = () => {
+  const newPlatform: PlatformProps = {
+    x: 0,
+    y: 0,
+    velocity: 0,
+  };
+
+  newPlatform.x = platformState.x;
+  newPlatform.y = platformState.y;
+
+  const platform = document.createElement("div");
+  platform.style.transform = `translateX(${newPlatform.x}px) translateY(${newPlatform.y}px)`;
+
+  platforms.appendChild(platform);
+  platformState.platformsInRiver.push(newPlatform);
+};
+
 const handlePlatforms = () => {
   //
   if (PLAYER_1.DPAD.up && PLAYER_2.DPAD.up) {
@@ -118,6 +149,7 @@ const handlePlatforms = () => {
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.right) {
     platformState.velocityX += CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.left) {
+    placePlatform();
   }
 
   platformState.velocityX *= CURSOR_DECELERATION;
