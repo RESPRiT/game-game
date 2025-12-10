@@ -33,7 +33,8 @@ let currentState = {
   flowMultiplier: 1,
 };
 
-function update() {
+let last = (document.timeline.currentTime as number) ?? 0;
+function update(timestamp: number) {
   //   if (!gameStarted) {
   //     if (SYSTEM.ONE_PLAYER) {
   //       gameStarted = true;
@@ -52,9 +53,12 @@ function update() {
   //   }
 
   //// current update logic
+  // multiplier that is ~1 at 60fps
+  const rate = (timestamp - last) / ((1 / 60) * 1000);
+
   // handle spinner inputs
-  const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta;
-  const flowSpinnerDelta = SPINNER_2.SPINNER.step_delta;
+  const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta * rate;
+  const flowSpinnerDelta = SPINNER_2.SPINNER.step_delta * rate;
 
   // update position, velocity
 
@@ -69,7 +73,7 @@ function update() {
   );
 
   // acceleration "gravitates" towards 0
-  currentState.acceleration *= DECELLERATION_FACTOR;
+  currentState.acceleration *= DECELLERATION_FACTOR * rate;
 
   // velocity bounded by [-50, 50]
   currentState.velocity = Math.min(
@@ -78,7 +82,7 @@ function update() {
   );
 
   // velocity "gravitates" towards 0
-  currentState.velocity *= DELOCITY_FACTOR;
+  currentState.velocity *= DELOCITY_FACTOR * rate;
 
   // position bounded by [0, 300]
   currentState.position = Math.min(
@@ -93,19 +97,25 @@ function update() {
   }
 
   // update flow - match spinner if spinning, otherwise trend to 1
+
   if (flowSpinnerDelta !== 0) {
-    currentState.flow = 1 + flowSpinnerDelta * FLOW_FACTOR;
+    currentState.flow += Math.max(
+      0,
+      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 10
+    );
   } else {
-    currentState.flow *= DEFLOW_FACTOR;
+    currentState.flow *= DEFLOW_FACTOR * rate;
   }
   currentState.flow = Math.min(Math.max(currentState.flow, 1), MAX_FLOW);
 
   // update DOM
   current.style.transform = `translateX(${currentState.position}%)`;
-  flow.style.height = `${((currentState.flow - 1) * 100) / (MAX_FLOW - 1)}%`;
+  flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
 
   console.log(JSON.stringify(currentState));
+
+  last = timestamp;
   requestAnimationFrame(update);
 }
 
-update();
+update(last);
