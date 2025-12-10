@@ -1,15 +1,31 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Game</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game Game</title>
-</head>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
-
+  <body>
+    <div id="app">
+      <div id="hud">
+        <div id="score"></div>
+      </div>
+      <div id="container">
+        <div id="start">
+          <div id="ducks"></div>
+        </div>
+        <div id="river">
+          <div id="current">
+            <div id="flow"></div>
+          </div>
+          <div id="platforms"></div>
+        </div>
+        <div id="finish">
+          <div id="mama"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
