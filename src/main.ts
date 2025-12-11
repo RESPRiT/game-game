@@ -8,6 +8,7 @@ import {
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const current = document.querySelector<HTMLDivElement>("#current")!;
 const flow = document.querySelector<HTMLDivElement>("#flow")!;
+const cursor_container = document.querySelector<HTMLDivElement>("#cursor-container")!;
 const cursor = document.querySelector<HTMLDivElement>("#cursor")!;
 const platforms = document.querySelector<HTMLDivElement>("#platforms")!;
 
@@ -39,6 +40,7 @@ const currentState = {
 
 /// platform constants
 const CURSOR_SIZE = 50;
+const PLATFORM_SIZE = 50;
 const MAX_CURSOR_X = 252 - CURSOR_SIZE;
 const MAX_CURSOR_Y = 262 - CURSOR_SIZE;
 const CURSOR_ACCELERATION = 0.5;
@@ -124,20 +126,20 @@ const handleCurrent = () => {
 };
 
 /// platform functions
-const cursorObserver = new IntersectionObserver(
-  (entries) => {
-    console.log(entries);
+// const cursorObserver = new IntersectionObserver(
+//   (entries) => {
+//     console.log(entries);
 
-    platformState.canPlace =
-      entries.filter(
-        (entry) => entry.isIntersecting && entry.target.className === "platform"
-      ).length === 0;
-  },
-  {
-    root: cursor,
-    threshold: 0,
-  }
-);
+//     platformState.canPlace =
+//       entries.filter(
+//         (entry) => entry.isIntersecting && entry.target.className === "platform"
+//       ).length === 0;
+//   },
+//   {
+//     root: cursor,
+//     threshold: 0,
+//   }
+// );
 
 const placePlatform = () => {
   if (!platformState.canPlace) return;
@@ -151,16 +153,45 @@ const placePlatform = () => {
   newPlatform.x = platformState.x;
   newPlatform.y = platformState.y;
 
+  cursor.classList.add("isPlacing")
+
+  setTimeout(() => {
+    cursor.classList.remove("isPlacing")
+  }, 250)
+
   const platform = document.createElement("div");
   platform.style.transform = `translateX(${newPlatform.x}px) translateY(${newPlatform.y}px)`;
   platform.className = "platform";
 
-  cursor.appendChild(platform);
+  platforms.appendChild(platform);
   platformState.platformsInRiver.push(newPlatform);
-  cursorObserver.observe(platform);
 };
 
+const isColliding = () => {
+  // check if colloding with platform
+  const platforms = platformState.platformsInRiver
+  const cursorRadius = CURSOR_SIZE/2
+  const platformRadius = PLATFORM_SIZE/2
+  for (const platform of platforms) {
+    const distanceX = platformState.x + cursorRadius - (platform.x + platformRadius)
+    const distanceY = platformState.y + cursorRadius - (platform.y + platformRadius)
+    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+    if (distance < (cursorRadius + platformRadius)) return true
+  }
+  return false
+}
+
 const handlePlatforms = () => {
+
+  platformState.canPlace = !isColliding()
+
+  // Set state of cursor
+  if (platformState.canPlace) {
+    cursor.classList.remove("isDisabled")
+  } else {
+    cursor.classList.add("isDisabled")
+  }
+
   if (PLAYER_1.DPAD.up && PLAYER_2.DPAD.up) {
     platformState.velocityY -= CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.down && PLAYER_2.DPAD.down) {
@@ -193,7 +224,7 @@ const updateDOM = () => {
   current.style.transform = `translateX(${currentState.position}%)`;
   flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
 
-  cursor.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
+  cursor_container.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
 };
 
 function update() {
