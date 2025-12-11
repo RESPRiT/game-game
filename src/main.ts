@@ -5,12 +5,16 @@ import {
   PLAYER_2 as SPINNER_2,
 } from "@rcade/plugin-input-spinners";
 
+//-----------------
+// INITIALIZATION
+
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const current = document.querySelector<HTMLDivElement>("#current")!;
 const flow = document.querySelector<HTMLDivElement>("#flow")!;
 const cursor_container = document.querySelector<HTMLDivElement>("#cursor-container")!;
 const cursor = document.querySelector<HTMLDivElement>("#cursor")!;
 const platforms = document.querySelector<HTMLDivElement>("#platforms")!;
+const ducks = document.querySelector<HTMLDivElement>("#ducks")!;
 
 let gameStarted = false;
 
@@ -20,6 +24,10 @@ const MAX_POSITION = 300;
 const MAX_VELOCITY = 15;
 const MAX_ACCELERATION = 1;
 const MAX_FLOW = 3;
+const RIVER_VELOCITY = 1;
+const RIVER_WIDTH = 252;
+const RIVER_HEIGHT = 262;
+const LAND_WIDTH = 42;
 
 // how much rotating the spinner changes acceleration/flow
 const ACCELERATION_FACTOR = 0.01;
@@ -41,8 +49,8 @@ const currentState = {
 /// platform constants
 const CURSOR_SIZE = 50;
 const PLATFORM_SIZE = 50;
-const MAX_CURSOR_X = 252 - CURSOR_SIZE;
-const MAX_CURSOR_Y = 262 - CURSOR_SIZE;
+const MAX_CURSOR_X = RIVER_WIDTH - CURSOR_SIZE;
+const MAX_CURSOR_Y = RIVER_HEIGHT - CURSOR_SIZE;
 const CURSOR_ACCELERATION = 0.5;
 const CURSOR_DECELERATION = 0.95;
 
@@ -50,6 +58,7 @@ type PlatformProps = {
   x: number;
   y: number;
   velocity: number;
+  element: HTMLDivElement | null;
 };
 
 const platformState: {
@@ -68,12 +77,36 @@ const platformState: {
   canPlace: true,
 };
 
-/// helper functions
+type DuckProps = {
+  x: number;
+  y: number;
+  element: HTMLDivElement;
+};
+
+const ducksState: {
+  canSpawn: boolean;
+  ducks: DuckProps[];
+} = {
+  canSpawn: true,
+  ducks: []
+};
+
+// duck constants
+const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 25;
+const SPAWN_X = 14;
+const SPAWN_Y = 30;
+
+//---------
+// HELPERS
+
 const clamp = (min: number, current: number, max: number) => {
   return Math.max(Math.min(current, max), min);
 };
 
-/// current functions
+
+//--------------
+// RIVER CURRENT LOGIC
+
 const handleCurrent = () => {
   // handle spinner inputs
   const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta;
@@ -125,21 +158,9 @@ const handleCurrent = () => {
   currentState.flow = Math.min(Math.max(currentState.flow, 1), MAX_FLOW);
 };
 
-/// platform functions
-// const cursorObserver = new IntersectionObserver(
-//   (entries) => {
-//     console.log(entries);
 
-//     platformState.canPlace =
-//       entries.filter(
-//         (entry) => entry.isIntersecting && entry.target.className === "platform"
-//       ).length === 0;
-//   },
-//   {
-//     root: cursor,
-//     threshold: 0,
-//   }
-// );
+//----------------
+// PLATFORM LOGIC
 
 const placePlatform = () => {
   if (!platformState.canPlace) return;
@@ -147,7 +168,8 @@ const placePlatform = () => {
   const newPlatform: PlatformProps = {
     x: 0,
     y: 0,
-    velocity: 0,
+    velocity: RIVER_VELOCITY,
+    element: null
   };
 
   newPlatform.x = platformState.x;
@@ -162,13 +184,13 @@ const placePlatform = () => {
   const platform = document.createElement("div");
   platform.style.transform = `translateX(${newPlatform.x}px) translateY(${newPlatform.y}px)`;
   platform.className = "platform";
+  newPlatform["element"] = platform;
 
   platforms.appendChild(platform);
   platformState.platformsInRiver.push(newPlatform);
 };
 
 const isColliding = () => {
-  // check if colloding with platform
   const platforms = platformState.platformsInRiver
   const cursorRadius = CURSOR_SIZE/2
   const platformRadius = PLATFORM_SIZE/2
@@ -219,17 +241,105 @@ const handlePlatforms = () => {
   );
 };
 
-/// update DOM
+
+//------------
+// DUCK LOGIC
+
+const spawnDuck = () => {
+  const duckEl = document.createElement("div");
+  
+  const newDuck = {
+    x: SPAWN_X,
+    y: SPAWN_Y,
+    element: duckEl
+  };
+
+  duckEl.className = "duck";
+  duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
+  ducks.appendChild(duckEl);
+
+  // update duck state
+  ducksState.ducks.push(newDuck);
+  ducksState.canSpawn = false;
+}
+
+const tryToJump = (duck: DuckProps) => {
+  if(duck.x > LAND_WIDTH + RIVER_WIDTH - JUMP_DISTANCE) {
+    duck.x = LAND_WIDTH + RIVER_WIDTH + SPAWN_X;
+    return;
+  }
+
+  for(const platform of platformState.platformsInRiver) {
+    const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
+    const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
+    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+    if(distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
+      duckGoJump(duck, platform);
+      return;
+    }
+  }
+}
+
+const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
+  // allow spawning if the duck that is jumping is the spawn duck
+  if(duck.x === SPAWN_X && duck.y === SPAWN_Y) {
+    setTimeout(() => { ducksState.canSpawn = true}
+);
+  }  duck.x = platform.x;
+  duck.y = platform.y;
+}
+
+const handleDucks = () => {
+  if(ducksState.canSpawn) {
+    spawnDuck();
+  }
+
+  for(const duck of ducksState.ducks) {
+    tryToJump(duck);
+  }
+}
+
+//-----------
+// DOM LOGIC
+
 const updateDOM = () => {
   current.style.transform = `translateX(${currentState.position}%)`;
   flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
-
   cursor_container.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
+  updatePlatformsDOM();
+  updateDucksDOM();
 };
+
+const updatePlatformsDOM = () => {
+  const garbage: number[] = []
+  const platforms = platformState.platformsInRiver
+  for (let i = 0; i < platforms.length; i++) {
+    const platform = platforms[i]
+    if (platform.y > RIVER_HEIGHT) {
+      garbage.push(i)
+      platform.element!.remove()
+      continue
+    }
+    const element = platform.element
+    platform.y += RIVER_VELOCITY
+    element!.style.transform = `translateX(${platform.x}px) translateY(${platform.y}px)`
+  }
+  platforms.filter((_, i) => { garbage.includes(i) })
+}
+
+const updateDucksDOM = () => {
+  for (const duck of ducksState.ducks) {
+    duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
+  }
+}
+
+//------------------
+// MAIN UPDATE LOOP
 
 function update() {
   handleCurrent();
   handlePlatforms();
+  handleDucks();
   updateDOM();
 
   // debug
