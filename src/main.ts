@@ -24,7 +24,7 @@ const MAX_POSITION = 300;
 const MAX_VELOCITY = 15;
 const MAX_ACCELERATION = 1;
 const MAX_FLOW = 3;
-const RIVER_VELOCITY = 1;
+const RIVER_VELOCITY = .2;
 const RIVER_WIDTH = 252;
 const RIVER_HEIGHT = 262;
 const LAND_WIDTH = 42;
@@ -48,6 +48,7 @@ const currentState = {
 
 /// platform constants
 const CURSOR_SIZE = 50;
+const DUCK_SIZE = 15; 
 const PLATFORM_SIZE = 50;
 const MAX_CURSOR_X = RIVER_WIDTH - CURSOR_SIZE;
 const MAX_CURSOR_Y = RIVER_HEIGHT - CURSOR_SIZE;
@@ -81,6 +82,8 @@ type DuckProps = {
   x: number;
   y: number;
   element: HTMLDivElement;
+  state: 'waiting' | 'crossing' | 'finished';
+  currentPlatform?: number;
 };
 
 const ducksState: {
@@ -224,6 +227,8 @@ const handlePlatforms = () => {
     platformState.velocityX += CURSOR_ACCELERATION;
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.left) {
     placePlatform();
+  } else if (PLAYER_1.DPAD.left && PLAYER_2.DPAD.right) {
+    spawnDuck(); // for debugging duck spawning
   }
 
   platformState.velocityX *= CURSOR_DECELERATION;
@@ -248,10 +253,11 @@ const handlePlatforms = () => {
 const spawnDuck = () => {
   const duckEl = document.createElement("div");
   
-  const newDuck = {
+  const newDuck: DuckProps = {
     x: SPAWN_X,
     y: SPAWN_Y,
-    element: duckEl
+    state: 'waiting',
+    element: duckEl,
   };
 
   duckEl.className = "duck";
@@ -269,11 +275,12 @@ const tryToJump = (duck: DuckProps) => {
     return;
   }
 
-  for(const platform of platformState.platformsInRiver) {
+  for(const [i, platform] of platformState.platformsInRiver.entries()) {
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
     if(distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
+      duck.currentPlatform = i;
       duckGoJump(duck, platform);
       return;
     }
@@ -283,9 +290,9 @@ const tryToJump = (duck: DuckProps) => {
 const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   // allow spawning if the duck that is jumping is the spawn duck
   if(duck.x === SPAWN_X && duck.y === SPAWN_Y) {
-    setTimeout(() => { ducksState.canSpawn = true}
-);
-  }  duck.x = platform.x;
+    // setTimeout(() => { ducksState.canSpawn = true}, 150);
+  }
+  duck.x = duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
   duck.y = platform.y;
 }
 
@@ -329,6 +336,9 @@ const updatePlatformsDOM = () => {
 
 const updateDucksDOM = () => {
   for (const duck of ducksState.ducks) {
+    if (duck.currentPlatform) {
+      duck.y = platformState.platformsInRiver[duck.currentPlatform].y + PLATFORM_SIZE/2
+    }
     duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
   }
 }

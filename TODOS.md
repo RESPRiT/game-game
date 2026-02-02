@@ -1,12 +1,13 @@
 RIVER & PLATFORMS (Matt/C)
-- [ ] Move platforms with river
+- [x] Move platforms with river
 - [ ] Move platforms with current
   - Check x positions to within half the width/radius 
   - Toggle class "isInCurrent"
   - For those inCurrent affect velocity
+- [ ] Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
 
 DUCKS (Harrison)
-- [ ] Add entities
+- [x] Add entities
 - [ ] Move when platform is near
 - [ ] Duck end state
 
