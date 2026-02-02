@@ -28,6 +28,7 @@ const RIVER_VELOCITY = .2;
 const RIVER_WIDTH = 252;
 const RIVER_HEIGHT = 262;
 const LAND_WIDTH = 42;
+const CURRENT_WIDTH = RIVER_WIDTH / 4;
 
 // how much rotating the spinner changes acceleration/flow
 const ACCELERATION_FACTOR = 0.01;
@@ -95,7 +96,7 @@ const ducksState: {
 };
 
 // duck constants
-const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 25;
+const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 2.5;
 const SPAWN_X = 14;
 const SPAWN_Y = 30;
 
@@ -271,6 +272,8 @@ const spawnDuck = () => {
 
 const tryToJump = (duck: DuckProps) => {
   if(duck.x > LAND_WIDTH + RIVER_WIDTH - JUMP_DISTANCE) {
+    // End
+    duck.state = 'finished';
     duck.x = LAND_WIDTH + RIVER_WIDTH + SPAWN_X;
     return;
   }
@@ -279,6 +282,13 @@ const tryToJump = (duck: DuckProps) => {
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+    const consoleObj = {
+      distanceX,
+      distanceY,
+      distance,
+      JUMP_DISTANCE,
+    }
+    console.log(consoleObj)
     if(distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
       duck.currentPlatform = i;
       duckGoJump(duck, platform);
@@ -287,6 +297,7 @@ const tryToJump = (duck: DuckProps) => {
   }
 }
 
+let last_jump:number = new Date().getTime();
 const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   // allow spawning if the duck that is jumping is the spawn duck
   if(duck.x === SPAWN_X && duck.y === SPAWN_Y) {
@@ -294,15 +305,23 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   }
   duck.x = duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
   duck.y = platform.y;
+  if (duck.state = 'waiting') {
+    last_jump = new Date().getTime();
+  }
+  duck.state = 'crossing';
 }
 
 const handleDucks = () => {
-  if(ducksState.canSpawn) {
-    spawnDuck();
-  }
-
+  ducksState.canSpawn = true;
   for(const duck of ducksState.ducks) {
     tryToJump(duck);
+    if(duck.state === 'waiting'){
+      ducksState.canSpawn = false;
+    }
+  }
+  const dateNow:number = new Date().getTime();
+  if(ducksState.canSpawn && dateNow - last_jump > 3000) {
+    spawnDuck()
   }
 }
 
@@ -342,6 +361,8 @@ const updateDucksDOM = () => {
     duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
   }
 }
+
+
 
 //------------------
 // MAIN UPDATE LOOP
