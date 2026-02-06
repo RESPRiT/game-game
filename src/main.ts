@@ -230,7 +230,7 @@ const handlePlatforms = () => {
   } else if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.left) {
     placePlatform();
   } else if (PLAYER_1.DPAD.left && PLAYER_2.DPAD.right) {
-    spawnDuck(); // for debugging duck spawning
+    // spawnDuck(); // for debugging duck spawning
   }
 
   platformState.velocityX *= CURSOR_DECELERATION;
@@ -253,6 +253,7 @@ const handlePlatforms = () => {
 // DUCK LOGIC
 
 const spawnDuck = () => {
+  ducksState.canSpawn = false;
   const duckEl = document.createElement("div");
   
   const newDuck: DuckProps = {
@@ -281,7 +282,6 @@ const spawnDuck = () => {
 
   // update duck state
   ducksState.ducks.push(newDuck);
-  ducksState.canSpawn = false;
   console.log('Spawned duck #', ducksState.ducks.length)
 }
 
@@ -295,6 +295,7 @@ const tryToJump = (duck: DuckProps) => {
 
   for(const [i, platform] of platformState.platformsInRiver.entries()) {
     if (duck.currentPlatform === i) continue
+    if (duck.x > platform.x) continue
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
@@ -305,7 +306,7 @@ const tryToJump = (duck: DuckProps) => {
     //   JUMP_DISTANCE,
     // }
     // console.log(consoleObj)
-    const dateNow:number = new Date().getTime();
+    // const dateNow:number = new Date().getTime();
 
     if(duck.state !== 'jumping' && distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
       duck.currentPlatform = i;
