@@ -83,8 +83,9 @@ type DuckProps = {
   x: number;
   y: number;
   element: HTMLDivElement;
-  state: 'waiting' | 'crossing' | 'finished';
+  state: 'waiting' | 'crossing' | 'startingJump' | 'jumping' | 'finished';
   currentPlatform?: number;
+  nextPlatform?: number;
 };
 
 const ducksState: {
@@ -96,7 +97,7 @@ const ducksState: {
 };
 
 // duck constants
-const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 2.5;
+const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 2.5; //27.5
 const SPAWN_X = 14;
 const SPAWN_Y = 30;
 
@@ -263,11 +264,25 @@ const spawnDuck = () => {
 
   duckEl.className = "duck";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
+  duckEl.innerText = `${ducksState.ducks.length + 1}`
   ducks.appendChild(duckEl);
+  duckEl.ontransitionstart = (event: TransitionEvent) => {
+    if (event.propertyName === 'transform') {
+      newDuck.state = 'jumping'
+      console.log(`Duck #${ducksState.ducks.length} jumped!`, event)
+    }
+  }
+  duckEl.ontransitionend = (event: TransitionEvent) => {
+    if (event.propertyName === 'transform') {
+      newDuck.state = 'crossing'
+      console.log(`Duck #${ducksState.ducks.length} stopped!`, event)
+    }
+  }
 
   // update duck state
   ducksState.ducks.push(newDuck);
   ducksState.canSpawn = false;
+  console.log('Spawned duck #', ducksState.ducks.length)
 }
 
 const tryToJump = (duck: DuckProps) => {
@@ -279,36 +294,43 @@ const tryToJump = (duck: DuckProps) => {
   }
 
   for(const [i, platform] of platformState.platformsInRiver.entries()) {
+    if (duck.currentPlatform === i) continue
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
-    const consoleObj = {
-      distanceX,
-      distanceY,
-      distance,
-      JUMP_DISTANCE,
-    }
-    console.log(consoleObj)
-    if(distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
+    // const consoleObj = {
+    //   distanceX,
+    //   distanceY,
+    //   distance,
+    //   JUMP_DISTANCE,
+    // }
+    // console.log(consoleObj)
+    const dateNow:number = new Date().getTime();
+
+    if(duck.state !== 'jumping' && distance < (JUMP_DISTANCE + PLATFORM_SIZE / 2)) {
       duck.currentPlatform = i;
+      // if(!(dateNow - last_embark < 3000 && duck.state === 'waiting')){
       duckGoJump(duck, platform);
+      // }
       return;
     }
   }
 }
 
-let last_jump:number = new Date().getTime();
+let last_embark:number = new Date().getTime();
 const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   // allow spawning if the duck that is jumping is the spawn duck
   if(duck.x === SPAWN_X && duck.y === SPAWN_Y) {
     // setTimeout(() => { ducksState.canSpawn = true}, 150);
   }
-  duck.x = duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
+  // Keep x,y the same between duck and platform for logic purposes
+  // Use CSS to offset display
+  duck.x = platform.x; // duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
   duck.y = platform.y;
-  if (duck.state = 'waiting') {
-    last_jump = new Date().getTime();
+  if (duck.state === 'waiting') {
+    last_embark = new Date().getTime();
   }
-  duck.state = 'crossing';
+  duck.state = 'startingJump';
 }
 
 const handleDucks = () => {
@@ -320,7 +342,7 @@ const handleDucks = () => {
     }
   }
   const dateNow:number = new Date().getTime();
-  if(ducksState.canSpawn && dateNow - last_jump > 3000) {
+  if(ducksState.canSpawn && dateNow - last_embark > 3000) {
     spawnDuck()
   }
 }
@@ -354,15 +376,29 @@ const updatePlatformsDOM = () => {
 }
 
 const updateDucksDOM = () => {
-  for (const duck of ducksState.ducks) {
-    if (duck.currentPlatform) {
-      duck.y = platformState.platformsInRiver[duck.currentPlatform].y + PLATFORM_SIZE/2
+  const garbage: number[] = [];
+  const ducks = ducksState.ducks
+  for (const [i, duck] of ducks.entries()) {
+    const currPlat = platformState.platformsInRiver[duck.currentPlatform!]
+    if (duck.y > RIVER_HEIGHT) {
+      garbage.push(i)
+      duck.element!.remove()
+      continue
     }
-    duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
+    if (duck.currentPlatform) {
+      duck.y = currPlat.y + PLATFORM_SIZE/2
+    }
+    
+    if (duck.state === 'startingJump') {
+      duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
+    } 
+    // else if (duck.state !== 'jumping' && duck.x === currPlat.x) {
+      
+    // }
+    duck.element.dataset.state = duck.state
   }
+  ducks.filter((_, i) => { garbage.includes(i) })
 }
-
-
 
 //------------------
 // MAIN UPDATE LOOP

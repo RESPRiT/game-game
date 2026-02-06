@@ -117,8 +117,13 @@ body {
   left: 0;
   width: 15px;
   height: 15px;
+  margin-left: 50px;
+  margin-top: 0;
   transform: translateX(0) translateY(0);
   transition: all 0.075s ease-in-out;
+  font-size: 10px;
+  text-align: center;
+  color: black;
 }
 
 h1 {
@@ -139,3 +144,8 @@ button {
 button:hover {
   background-color: #5a5a7a;
 }
+
+[data-state="waiting"] { border: 2px solid orangered; }
+[data-state="jumping"] { border: 2px solid green; }
+[data-state="crossing"] { border: 2px solid hotpink; }
+[data-state="finished"] { border: 2px solid orange; }
