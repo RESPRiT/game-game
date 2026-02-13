@@ -84,6 +84,7 @@ const platformState: {
 };
 
 type DuckProps = {
+  id: number;
   x: number;
   y: number;
   element: HTMLDivElement;
@@ -93,9 +94,11 @@ type DuckProps = {
 };
 
 const ducksState: {
+  ducksSpawned: number;
   canSpawn: boolean;
   ducks: DuckProps[];
 } = {
+  ducksSpawned: 0,
   canSpawn: true,
   ducks: [],
 };
@@ -259,8 +262,10 @@ const handlePlatforms = () => {
 const spawnDuck = () => {
   ducksState.canSpawn = false;
   const duckEl = document.createElement("div");
+  ducksState.ducksSpawned++;
 
   const newDuck: DuckProps = {
+    id: ducksState.ducksSpawned,
     x: SPAWN_X,
     y: SPAWN_Y,
     state: "waiting",
@@ -269,18 +274,18 @@ const spawnDuck = () => {
 
   duckEl.className = "duck";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
-  duckEl.innerText = `${ducksState.ducks.length + 1}`;
+  duckEl.innerText = `${newDuck.id}`;
   ducks.appendChild(duckEl);
   duckEl.ontransitionstart = (event: TransitionEvent) => {
     if (event.propertyName === "transform") {
       newDuck.state = "jumping";
-      console.log(`Duck #${ducksState.ducks.length} jumped!`, event);
+      console.log(`Duck #${newDuck.id} jumped!`, event);
     }
   };
   duckEl.ontransitionend = (event: TransitionEvent) => {
     if (event.propertyName === "transform") {
       newDuck.state = "crossing";
-      console.log(`Duck #${ducksState.ducks.length} stopped!`, event);
+      console.log(`Duck #${newDuck.id} stopped!`, event);
     }
   };
 
@@ -301,12 +306,11 @@ const tryToJump = (duck: DuckProps) => {
   }
   let closestPlatform: number = -1;
   let closestDistance: number = 10000;
-  console.log("platforms length", platformState.platformsInRiver.length);
   for (const [i, platform] of platformState.platformsInRiver.entries()) {
     // Our duck is currently on i, ignore platform
-    if (duck.currentPlatform === i) {
+    if (duck.currentPlatform === platform.id) {
       console.log(
-        `duck #${duck.element.innerText} current platform ${duck.currentPlatform} is #${i}`,
+        `duck #${duck.id} current platform ${duck.currentPlatform} is #${platform.id}`,
       );
       continue;
     }
@@ -318,14 +322,16 @@ const tryToJump = (duck: DuckProps) => {
       );
       continue;
     }
-
+    //TODO: we maybe shouldn't have ducks jump up stream very far?
+    // if so we would need to place some sort of limit on the distanceY they can go
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + PLATFORM_SIZE / 2);
+    //if distancey is negative, platform is below. if it's positive, it's above
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     console.log("distance to platform", distance);
     if (closestDistance > distance) {
       closestDistance = distance;
-      closestPlatform = i;
+      closestPlatform = platform.id;
     }
   }
   if (
@@ -336,7 +342,10 @@ const tryToJump = (duck: DuckProps) => {
     console.log("jump to", closestPlatform);
 
     duck.currentPlatform = closestPlatform;
-    duckGoJump(duck, platformState.platformsInRiver[closestPlatform]);
+    const curPlatProp = platformState.platformsInRiver.find(
+      (platform) => platform.id === duck.currentPlatform,
+    )!!;
+    duckGoJump(duck, curPlatProp);
   }
 };
 
@@ -396,11 +405,13 @@ const updatePlatformsDOM = () => {
     element!.style.transform = `translateX(${platform.x}px) translateY(${platform.y}px)`;
   }
   if (garbage.length > 0) {
-    platformState.platformsInRiver = platformState.platformsInRiver.filter((platform, _) => !garbage.includes(platform.id))
+    platformState.platformsInRiver = platformState.platformsInRiver.filter(
+      (platform, _) => !garbage.includes(platform.id),
+    );
     // for (let i = 0; i < garbage.length; i++) {
-      // const g = garbage[i]
-      // const el = platformState.platformsInRiver[g].element?.remove()
-      // platformState.platformsInRiver.slice
+    // const g = garbage[i]
+    // const el = platformState.platformsInRiver[g].element?.remove()
+    // platformState.platformsInRiver.slice
     // }
   }
 };
@@ -411,12 +422,13 @@ const updateDucksDOM = () => {
   for (const [i, duck] of ducks.entries()) {
     const currPlat = platformState.platformsInRiver[duck.currentPlatform!];
     if (duck.y > RIVER_HEIGHT) {
-      garbage.push(i);
+      garbage.push(duck.id);
       duck.element!.remove();
       continue;
     }
     if (
       duck.currentPlatform &&
+      currPlat &&
       duck.state !== "jumping" &&
       duck.state !== "startingJump"
     ) {
@@ -433,9 +445,11 @@ const updateDucksDOM = () => {
     // }
     duck.element.dataset.state = duck.state;
   }
-  ducks.filter((_, i) => {
-    garbage.includes(i);
-  });
+  if (garbage.length > 0) {
+    ducksState.ducks = ducksState.ducks.filter(
+      (duck, _) => !garbage.includes(duck.id),
+    );
+  }
 };
 
 //------------------
