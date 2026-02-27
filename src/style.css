@@ -141,7 +141,7 @@ body {
   position: absolute;
   top: 15px;
   left: 15px;
-  transition: all 0.075s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }
 
 h1 {
@@ -176,5 +176,5 @@ button:hover {
   border: 2px solid #ffa500;
 }
 [data-state="startingJump"] {
-  border: 2px solid #400080;
+  border: 2px solid #FFF;
 }

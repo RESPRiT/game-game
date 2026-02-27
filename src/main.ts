@@ -281,12 +281,14 @@ const spawnDuck = () => {
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
   spriteEl.innerText = `${newDuck.id}`;
   spriteEl.ontransitionstart = (event: TransitionEvent) => {
+    console.log("Transition start", event.propertyName)
     if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "jumping";
       console.log(`Duck #${newDuck.id} jumped!`, event);
     }
   };
   spriteEl.ontransitionend = (event: TransitionEvent) => {
+    console.log("Transition end", event.propertyName)
     if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "crossing";
       console.log(`Duck #${newDuck.id} stopped!`, event);
@@ -317,9 +319,9 @@ const tryToJump = (duck: DuckProps) => {
   for (const [i, platform] of platformState.platformsInRiver.entries()) {
     // Our duck is currently on i, ignore platform
     if (duck.currentPlatform === platform.id) {
-      console.log(
-        `duck #${duck.id} current platform ${duck.currentPlatform} is #${platform.id}`,
-      );
+      // console.log(
+      //   `duck #${duck.id} current platform ${duck.currentPlatform} is #${platform.id}`,
+      // );
       continue;
     }
 
@@ -365,14 +367,20 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   }
   // Keep x,y the same between duck and platform for logic purposes
   // Use CSS to offset display
+  const oldX = duck.x
+  const oldY = duck.y
   duck.x = platform.x; // duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
   duck.y = platform.y;
   if (duck.state === "waiting") {
     last_embark = new Date().getTime();
   }
   duck.state = "startingJump";
-  duck.spriteElement.style.top = `${duck.y}px`
-  duck.spriteElement.style.left = `${duck.x}px`
+  duck.spriteElement.style.top = `${oldY - duck.y + 15}px`
+  duck.spriteElement.style.left = `${oldX - duck.x + 15}px`
+  // console.log(duck.spriteElement.style.top, duck.spriteElement.style.left)
+  // duck.spriteElement.style.transition = 'all 0.075s ease-in-out'
+  // duck.spriteElement.style.top = `15px`
+  // duck.spriteElement.style.left = `15px`
 };
 
 const handleDucks = () => {
@@ -447,14 +455,14 @@ const updateDucksDOM = () => {
     // The platform our duck is on
     const currPlat = getPlatform(duck.currentPlatform);
     if (!currPlat) continue
-    console.log("Update Ducks DOM: ", duck.currentPlatform, currPlat)
+    // console.log("Update Ducks DOM: ", duck.currentPlatform, currPlat)
 
-    if (duck.state === "crossing") {
+    if (duck.state !== "waiting" && duck.state !== "finished") {
       // Duck and Platform coordinates should match
       duck.y = currPlat.y;
       duck.x = currPlat.x;
       duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
-      duck.spriteElement.style.transform  = `translateY(${duck.y}px) translateX(${duck.x}px)`;
+      // duck.spriteElement.style.transform  = `translateY(${duck.y}px) translateX(${duck.x}px)`;
     }
 
     // if (duck.state === "startingJump") {
