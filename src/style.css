@@ -141,7 +141,7 @@ body {
   position: absolute;
   top: 15px;
   left: 15px;
-  transition: all 0.25s ease-in-out;
+  transition: none;
 }
 
 h1 {

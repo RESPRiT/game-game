@@ -280,19 +280,25 @@ const spawnDuck = () => {
   duckEl.className = "duck_container";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
   spriteEl.innerText = `${newDuck.id}`;
+  spriteEl.ontransitionrun = (event: TransitionEvent) => {
+    console.log("Transition run", event.propertyName)
+    newDuck.spriteElement.style.top = `15px`
+    newDuck.spriteElement.style.left = `15px`
+  };
   spriteEl.ontransitionstart = (event: TransitionEvent) => {
     console.log("Transition start", event.propertyName)
-    if (event.propertyName === "top" || event.propertyName === "left") {
+    // if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "jumping";
       console.log(`Duck #${newDuck.id} jumped!`, event);
-    }
+    // }
   };
   spriteEl.ontransitionend = (event: TransitionEvent) => {
     console.log("Transition end", event.propertyName)
-    if (event.propertyName === "top" || event.propertyName === "left") {
+    // if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "crossing";
       console.log(`Duck #${newDuck.id} stopped!`, event);
-    }
+      newDuck.spriteElement.style.transition = 'none'
+    // }
   };
   ducks.appendChild(duckEl);
 
@@ -327,9 +333,9 @@ const tryToJump = (duck: DuckProps) => {
 
     // If the platform is to the left of the duck, ignore platform
     if (duck.x - 12 > platform.x && duck.state !== "waiting") {
-      console.log(
-        `duck #${duck.element.innerText} x: ${duck.x} > platform #${i} x: ${platform.x}`,
-      );
+      // console.log(
+      //   `duck #${duck.element.innerText} x: ${duck.x} > platform #${i} x: ${platform.x}`,
+      // );
       continue;
     }
     //TODO: we maybe shouldn't have ducks jump up stream very far?
@@ -338,7 +344,7 @@ const tryToJump = (duck: DuckProps) => {
     //if distancey is negative, platform is below. if it's positive, it's above
     const distanceY = duck.y + JUMP_DISTANCE - (platform.y + PLATFORM_SIZE / 2);
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-    console.log("distance to platform", distance);
+    // console.log("distance to platform", distance);
     if (closestDistance > distance) {
       closestDistance = distance;
       closestPlatform = platform.id;
@@ -378,7 +384,7 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   duck.spriteElement.style.top = `${oldY - duck.y + 15}px`
   duck.spriteElement.style.left = `${oldX - duck.x + 15}px`
   // console.log(duck.spriteElement.style.top, duck.spriteElement.style.left)
-  // duck.spriteElement.style.transition = 'all 0.075s ease-in-out'
+  duck.spriteElement.style.transition = 'all 0.75s ease-in-out'
   // duck.spriteElement.style.top = `15px`
   // duck.spriteElement.style.left = `15px`
 };
