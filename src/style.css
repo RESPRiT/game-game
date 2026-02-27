@@ -126,7 +126,7 @@ body {
   height: 45px;
   margin-top: 0;
   transform: translateX(0) translateY(0);
-  transition: all 0.075s ease-in-out;
+  /* transition: all 0.075s ease-in-out; */
   font-size: 10px;
   text-align: center;
   color: black;

@@ -88,6 +88,7 @@ type DuckProps = {
   x: number;
   y: number;
   element: HTMLDivElement;
+  spriteElement: HTMLDivElement;
   state: "waiting" | "crossing" | "startingJump" | "jumping" | "finished";
   currentPlatform?: number;
   nextPlatform?: number;
@@ -273,24 +274,25 @@ const spawnDuck = () => {
     y: SPAWN_Y,
     state: "waiting",
     element: duckEl,
+    spriteElement: spriteEl,
   };
 
   duckEl.className = "duck_container";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
   spriteEl.innerText = `${newDuck.id}`;
-  ducks.appendChild(duckEl);
-  duckEl.ontransitionstart = (event: TransitionEvent) => {
-    if (event.propertyName === "transform") {
+  spriteEl.ontransitionstart = (event: TransitionEvent) => {
+    if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "jumping";
       console.log(`Duck #${newDuck.id} jumped!`, event);
     }
   };
-  duckEl.ontransitionend = (event: TransitionEvent) => {
-    if (event.propertyName === "transform") {
+  spriteEl.ontransitionend = (event: TransitionEvent) => {
+    if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "crossing";
       console.log(`Duck #${newDuck.id} stopped!`, event);
     }
   };
+  ducks.appendChild(duckEl);
 
   // update duck state
   ducksState.ducks.push(newDuck);
@@ -301,12 +303,15 @@ const tryToJump = (duck: DuckProps) => {
   if (platformState.platformsInRiver.length === 0) {
     return;
   }
+  // FIXME: with new approach, we don't get to "finished"
   if (duck.x > LAND_WIDTH + RIVER_WIDTH - JUMP_DISTANCE) {
     // End
     duck.state = "finished";
     duck.x = LAND_WIDTH + RIVER_WIDTH + SPAWN_X;
     return;
   }
+
+  
   let closestPlatform: number = -1;
   let closestDistance: number = 10000;
   for (const [i, platform] of platformState.platformsInRiver.entries()) {
@@ -366,6 +371,8 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
     last_embark = new Date().getTime();
   }
   duck.state = "startingJump";
+  duck.spriteElement.style.top = `${duck.y}px`
+  duck.spriteElement.style.left = `${duck.x}px`
 };
 
 const handleDucks = () => {
@@ -419,30 +426,40 @@ const updatePlatformsDOM = () => {
   }
 };
 
+function getPlatform(id:number):PlatformProps | undefined{
+  return platformState.platformsInRiver.find((platform)=> platform.id === id);
+}
+
 const updateDucksDOM = () => {
   const garbage: number[] = [];
   const ducks = ducksState.ducks;
-  for (const [i, duck] of ducks.entries()) {
-    const currPlat = platformState.platformsInRiver[duck.currentPlatform!];
+  for (const [_, duck] of ducks.entries()) {
+    //Remove duck
     if (duck.y > RIVER_HEIGHT) {
       garbage.push(duck.id);
       duck.element!.remove();
       continue;
     }
-    if (
-      duck.currentPlatform &&
-      currPlat &&
-      duck.state !== "jumping" &&
-      duck.state !== "startingJump"
-    ) {
-      duck.y = currPlat.y + PLATFORM_SIZE / 2;
-      duck.element.style.top = duck.y - 25 + "px";
-      duck.element.style.left = duck.x + 3 + "px";
+
+    // If duck isn't on platform ignore
+    if (!duck.currentPlatform) continue
+    
+    // The platform our duck is on
+    const currPlat = getPlatform(duck.currentPlatform);
+    if (!currPlat) continue
+    console.log("Update Ducks DOM: ", duck.currentPlatform, currPlat)
+
+    if (duck.state === "crossing") {
+      // Duck and Platform coordinates should match
+      duck.y = currPlat.y;
+      duck.x = currPlat.x;
+      duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
+      duck.spriteElement.style.transform  = `translateY(${duck.y}px) translateX(${duck.x}px)`;
     }
 
-    if (duck.state === "startingJump") {
-      duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
-    }
+    // if (duck.state === "startingJump") {
+    //   duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
+    // }
     // else if (duck.state !== 'jumping' && duck.x === currPlat.x) {
 
     // }
