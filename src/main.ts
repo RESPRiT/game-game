@@ -280,25 +280,19 @@ const spawnDuck = () => {
   duckEl.className = "duck_container";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
   spriteEl.innerText = `${newDuck.id}`;
-  spriteEl.ontransitionrun = (event: TransitionEvent) => {
-    console.log("Transition run", event.propertyName)
-    newDuck.spriteElement.style.top = `15px`
-    newDuck.spriteElement.style.left = `15px`
-  };
   spriteEl.ontransitionstart = (event: TransitionEvent) => {
     console.log("Transition start", event.propertyName)
-    // if (event.propertyName === "top" || event.propertyName === "left") {
+    if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "jumping";
       console.log(`Duck #${newDuck.id} jumped!`, event);
-    // }
+    }
   };
   spriteEl.ontransitionend = (event: TransitionEvent) => {
     console.log("Transition end", event.propertyName)
-    // if (event.propertyName === "top" || event.propertyName === "left") {
+    if (event.propertyName === "top" || event.propertyName === "left") {
       newDuck.state = "crossing";
       console.log(`Duck #${newDuck.id} stopped!`, event);
-      newDuck.spriteElement.style.transition = 'none'
-    // }
+    }
   };
   ducks.appendChild(duckEl);
 
@@ -381,12 +375,19 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
     last_embark = new Date().getTime();
   }
   duck.state = "startingJump";
+  
+  // Set animation origin
+  duck.spriteElement.style.transition = 'none'
   duck.spriteElement.style.top = `${oldY - duck.y + 15}px`
   duck.spriteElement.style.left = `${oldX - duck.x + 15}px`
-  // console.log(duck.spriteElement.style.top, duck.spriteElement.style.left)
-  duck.spriteElement.style.transition = 'all 0.75s ease-in-out'
-  // duck.spriteElement.style.top = `15px`
-  // duck.spriteElement.style.left = `15px`
+
+  // Force browser to commit update to layout (aka reflow)
+  duck.spriteElement.getBoundingClientRect();  
+  
+  // Set animation
+  duck.spriteElement.style.transition = 'all 0.25s ease-in-out'
+  duck.spriteElement.style.top = `15px`
+  duck.spriteElement.style.left = `15px`
 };
 
 const handleDucks = () => {
