@@ -263,7 +263,7 @@ const spawnDuck = () => {
   ducksState.canSpawn = false;
   const duckEl = document.createElement("div");
   const spriteEl = document.createElement("div");
-  spriteEl.className = "sprite";
+  spriteEl.className = "duck_sprite";
   duckEl.appendChild(spriteEl);
   ducksState.ducksSpawned++;
 
@@ -275,7 +275,7 @@ const spawnDuck = () => {
     element: duckEl,
   };
 
-  duckEl.className = "duck";
+  duckEl.className = "duck_container";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
   spriteEl.innerText = `${newDuck.id}`;
   ducks.appendChild(duckEl);

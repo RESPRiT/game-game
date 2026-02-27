@@ -116,14 +116,14 @@ body {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.125);
 }
 
-.duck {
+.duck_container {
   border-radius: 100%;
   position: absolute;
   z-index: 10;
   top: 0;
   left: 0;
-  width: 15px;
-  height: 15px;
+  width: 45px;
+  height: 45px;
   margin-top: 0;
   transform: translateX(0) translateY(0);
   transition: all 0.075s ease-in-out;
@@ -131,7 +131,7 @@ body {
   text-align: center;
   color: black;
 }
-.sprite {
+.duck_sprite {
   background-image: url("/assets/img/ducklings_single.png");
   background-size: 350%;
   background-position: bottom;
@@ -139,8 +139,8 @@ body {
   width: 15px;
   height: 15px;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 15px;
+  left: 15px;
   transition: all 0.075s ease-in-out;
 }
 
