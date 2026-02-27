@@ -117,10 +117,6 @@ body {
 }
 
 .duck {
-  background-image: url("/assets/img/ducklings_single.png");
-  background-size: 350%;
-  background-position: bottom;
-  image-rendering: pixelated;
   border-radius: 100%;
   position: absolute;
   z-index: 10;
@@ -134,6 +130,18 @@ body {
   font-size: 10px;
   text-align: center;
   color: black;
+}
+.sprite {
+  background-image: url("/assets/img/ducklings_single.png");
+  background-size: 350%;
+  background-position: bottom;
+  image-rendering: pixelated;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.075s ease-in-out;
 }
 
 h1 {
@@ -156,14 +164,17 @@ button:hover {
 }
 
 [data-state="waiting"] {
-  border: 2px solid orangered;
+  border: 2px solid #ff4500;
 }
 [data-state="jumping"] {
-  border: 2px solid green;
+  border: 2px solid #008000;
 }
 [data-state="crossing"] {
-  border: 2px solid hotpink;
+  border: 2px solid #ff69b4;
 }
 [data-state="finished"] {
-  border: 2px solid orange;
+  border: 2px solid #ffa500;
+}
+[data-state="startingJump"] {
+  border: 2px solid #400080;
 }

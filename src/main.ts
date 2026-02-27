@@ -105,8 +105,8 @@ const ducksState: {
 
 // duck constants
 const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 2.5; //27.5
-const SPAWN_X = 12;
-const SPAWN_Y = 8;
+const SPAWN_X = -30;
+const SPAWN_Y = 10;
 
 //---------
 // HELPERS
@@ -262,6 +262,9 @@ const handlePlatforms = () => {
 const spawnDuck = () => {
   ducksState.canSpawn = false;
   const duckEl = document.createElement("div");
+  const spriteEl = document.createElement("div");
+  spriteEl.className = "sprite";
+  duckEl.appendChild(spriteEl);
   ducksState.ducksSpawned++;
 
   const newDuck: DuckProps = {
@@ -274,7 +277,7 @@ const spawnDuck = () => {
 
   duckEl.className = "duck";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
-  duckEl.innerText = `${newDuck.id}`;
+  spriteEl.innerText = `${newDuck.id}`;
   ducks.appendChild(duckEl);
   duckEl.ontransitionstart = (event: TransitionEvent) => {
     if (event.propertyName === "transform") {
@@ -316,7 +319,7 @@ const tryToJump = (duck: DuckProps) => {
     }
 
     // If the platform is to the left of the duck, ignore platform
-    if (duck.x - 12 > platform.x) {
+    if (duck.x - 12 > platform.x && duck.state !== "waiting") {
       console.log(
         `duck #${duck.element.innerText} x: ${duck.x} > platform #${i} x: ${platform.x}`,
       );
