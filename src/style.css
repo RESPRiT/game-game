@@ -178,3 +178,82 @@ button:hover {
 [data-state="startingJump"] {
   border: 2px solid #FFF;
 }
+
+#hud {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}
+
+/* CONTROL SCHEME */
+#controls {
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  color: #502800;
+  font-family: 'Courier', 'Courier New', monospace;
+  font-size: xx-small;
+}
+
+.controls_header,
+.controls_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+.controls_header > div {
+  text-align: center;
+  margin-right: 0.5rem; /* to center text with image to align with icons below */
+}
+.controls_icon,
+.controls_label {
+  opacity: 0.5;
+}
+.controls_icon {
+  width: 8px;
+  height: 8px;
+  background-size: contain;
+  image-rendering: pixelated;
+  margin-right: 0.5rem;
+}
+.controls_icon.active {
+  opacity: 1.0;
+}
+
+.controls_header .controls_icon {
+  margin-right: 0; /* to center text with image to align with icons below */
+  opacity: 1.0;
+}
+
+.joystick {
+  background-image: url('assets/img/joystick.png');
+}
+
+.arrow-up,
+.arrow-left,
+.arrow-right,
+.arrow-down {
+  background-image: url('assets/img/arrow.png');
+}
+.arrow-up {
+  transform: rotate(270deg);
+}
+.arrow-down {
+  transform: rotate(90deg);
+}
+.arrow-left {
+  transform: rotate(180deg);
+  transform-origin: 4px 4px;
+}
+
+/* This margin-left positions the labels well visually in the river */
+.controls_label {
+  margin-left: 0.5rem; 
+}
+
+.active .controls_icon,
+.active .controls_label {
+  opacity: 1.0;
+}

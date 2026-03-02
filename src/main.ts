@@ -218,7 +218,43 @@ const isColliding = () => {
   return false;
 };
 
+
+const controls = document.getElementById("controls")
+
+const handleControls = () => {
+  const active = controls?.querySelector('.active');
+  active?.classList.remove('active');
+
+  if (PLAYER_1.DPAD.right && PLAYER_2.DPAD.left) {
+    document.getElementById(`controls_place`)?.classList.add('active')
+  } else {
+    checkControlsWithKey('up')
+    checkControlsWithKey('down')
+    checkControlsWithKey('left')
+    checkControlsWithKey('right')
+  }
+}
+
+const checkControlsWithKey = (key: 'up' | 'down' | 'left' | 'right') => {
+  if (PLAYER_1.DPAD[key]) {
+    document.getElementById(`a_${key}`)?.classList.add('active')
+    if (key === 'right') {
+      document.getElementById(`a_p_${key}`)?.classList.add('active')
+    }
+  }
+  if (PLAYER_2.DPAD[key]) {
+    document.getElementById(`b_${key}`)?.classList.add('active')
+    if (key === 'left') {
+      document.getElementById(`b_p_${key}`)?.classList.add('active')
+    }
+  }
+  if (PLAYER_1.DPAD[key] && PLAYER_2.DPAD[key]) {
+    document.getElementById(`controls_${key}`)?.classList.add('active')
+  }
+}
+
 const handlePlatforms = () => {
+
   platformState.canPlace = !isColliding();
 
   // Set state of cursor
@@ -493,6 +529,7 @@ const updateDucksDOM = () => {
 function update() {
   handleCurrent();
   handlePlatforms();
+  handleControls();
   handleDucks();
   updateDOM();
 
