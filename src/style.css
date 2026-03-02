@@ -226,6 +226,14 @@ button:hover {
   margin-right: 0; /* to center text with image to align with icons below */
   opacity: 1.0;
 }
+#a_p_right.active,
+#b_p_left.active {
+  opacity: 0.75;
+}
+.active #a_p_right,
+.active #b_p_left {
+  opacity: 1.0;
+}
 
 .joystick {
   background-image: url('assets/img/joystick.png');
