@@ -144,6 +144,22 @@ body {
   transition: none;
 }
 
+#finish {  
+  position: relative;
+}
+#mama {
+  background-image: url("/assets/img/mama_duck_still.png");
+  background-size: 150%;
+  background-position: bottom;
+  image-rendering: pixelated;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: 8px;
+  left: 0;
+  transition: none;
+}
+
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;

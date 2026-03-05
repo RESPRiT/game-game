@@ -105,7 +105,7 @@ const ducksState: {
 };
 
 // duck constants
-const JUMP_DISTANCE = PLATFORM_SIZE / 2 + 2.5; //27.5
+const JUMP_DISTANCE = PLATFORM_SIZE + PLATFORM_SIZE / 2; //27.5
 const SPAWN_X = -30;
 const SPAWN_Y = 10;
 
@@ -342,16 +342,18 @@ const tryToJump = (duck: DuckProps) => {
     return;
   }
   // FIXME: with new approach, we don't get to "finished"
-  if (duck.x > LAND_WIDTH + RIVER_WIDTH - JUMP_DISTANCE) {
+  if (duck.x > RIVER_WIDTH - PLATFORM_SIZE *1.25) {
     // End
     duck.state = "finished";
-    duck.x = LAND_WIDTH + RIVER_WIDTH + SPAWN_X;
+    const finishedX = RIVER_WIDTH;
+    duckGoJump(duck, finishedX, duck.y);
     return;
   }
 
   
   let closestPlatform: number = -1;
   let closestDistance: number = 10000;
+  
   for (const [i, platform] of platformState.platformsInRiver.entries()) {
     // Our duck is currently on i, ignore platform
     if (duck.currentPlatform === platform.id) {
@@ -362,7 +364,12 @@ const tryToJump = (duck: DuckProps) => {
     }
 
     // If the platform is to the left of the duck, ignore platform
-    if (duck.x - 12 > platform.x && duck.state !== "waiting") {
+    if (duck.x > platform.x || duck.y + PLATFORM_SIZE < platform.y) {
+      if(duck.x > platform.x){
+        // console.log(`duck ${duck.id} is to the right of platform ${platform.id}`)
+      } else{
+        // console.log(`duck ${duck.id} is above platform ${platform.id}`)
+      }
       // console.log(
       //   `duck #${duck.element.innerText} x: ${duck.x} > platform #${i} x: ${platform.x}`,
       // );
@@ -380,6 +387,16 @@ const tryToJump = (duck: DuckProps) => {
       closestPlatform = platform.id;
     }
   }
+  const closePlatform = platformState.platformsInRiver.find(plat => plat.id === closestPlatform);
+  if(closePlatform){
+      console.log('closest platform to duck', duck.id, ' with duck x', duck.x, 'is ', closestPlatform, 'with plat xy', closePlatform.x, ',', closePlatform.y, 'distance ', closestDistance, ' and jump distance is', JUMP_DISTANCE)
+  }
+
+  if(closestDistance > JUMP_DISTANCE && duck.state !== "waiting"){
+    console.log("JUMP DISTANCEE TOOO FAR")
+    return
+  }
+
   if (
     closestPlatform != -1 &&
     duck.state !== "jumping" &&
@@ -391,12 +408,12 @@ const tryToJump = (duck: DuckProps) => {
     const curPlatProp = platformState.platformsInRiver.find(
       (platform) => platform.id === duck.currentPlatform,
     )!!;
-    duckGoJump(duck, curPlatProp);
+    duckGoJump(duck, curPlatProp.x, curPlatProp.y);
   }
 };
 
 let last_embark: number = new Date().getTime();
-const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
+const duckGoJump = (duck: DuckProps, x:number, y:number ) => {
   // allow spawning if the duck that is jumping is the spawn duck
   if (duck.x === SPAWN_X && duck.y === SPAWN_Y) {
     // setTimeout(() => { ducksState.canSpawn = true}, 150);
@@ -405,12 +422,14 @@ const duckGoJump = (duck: DuckProps, platform: PlatformProps) => {
   // Use CSS to offset display
   const oldX = duck.x
   const oldY = duck.y
-  duck.x = platform.x; // duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
-  duck.y = platform.y;
+  duck.x = x; // duck.x + JUMP_DISTANCE - DUCK_SIZE / 2;
+  duck.y = y;
   if (duck.state === "waiting") {
     last_embark = new Date().getTime();
   }
-  duck.state = "startingJump";
+  if (duck.state !== "finished") {
+    duck.state = "startingJump";
+  }
   
   // Set animation origin
   duck.spriteElement.style.transition = 'none'
@@ -506,6 +525,10 @@ const updateDucksDOM = () => {
       duck.x = currPlat.x;
       duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
       // duck.spriteElement.style.transform  = `translateY(${duck.y}px) translateX(${duck.x}px)`;
+    }
+
+    if (duck.state === "finished") {
+      duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
     }
 
     // if (duck.state === "startingJump") {
