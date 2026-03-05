@@ -157,7 +157,26 @@ body {
   position: absolute;
   top: 8px;
   left: 0;
-  transition: none;
+}
+
+#mama.hooray,
+#mama:hover {
+  animation-name: hop;
+  animation-duration: 0.7s;
+}
+@keyframes hop {
+  0% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
 }
 
 h1 {
