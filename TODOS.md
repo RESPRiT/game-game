@@ -11,7 +11,7 @@ RIVER & PLATFORMS (Matt/C)
   - Toggle class "isInCurrent"
   - For those inCurrent affect velocity
   - Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
-- [ ] C: Update platform graphics
+- [x] C: Update platform graphics
 
 DUCKS (Harrison)
 - [x] Add entities
