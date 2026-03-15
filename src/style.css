@@ -157,6 +157,7 @@ body {
   position: absolute;
   top: 8px;
   left: 0;
+  transform: scaleX(-1);
 }
 
 #mama.hooray,
@@ -169,13 +170,13 @@ body {
     transform: translateY(0px);
   }
   25% {
-    transform: translateY(-4px);
+    transform: translateY(-4px) scaleX(-1);
   }
   50% {
     transform: translateY(0px);
   }
   100% {
-    transform: translateY(-8px);
+    transform: translateY(-8px) scaleX(-1);
   }
 }
 
