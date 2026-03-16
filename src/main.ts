@@ -124,6 +124,9 @@ const handleCurrent = () => {
   const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta;
   const flowSpinnerDelta = SPINNER_2.SPINNER.step_delta;
 
+  // c v left spinner
+  // . / right spinnner
+
   // bounded acceleration changed by spinner [-10, 10]
   currentState.acceleration = Math.min(
     Math.max(
@@ -162,7 +165,7 @@ const handleCurrent = () => {
   if (flowSpinnerDelta > 0) {
     currentState.flow += Math.max(
       0,
-      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 10,
+      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 2,
     );
   } else {
     currentState.flow *= DEFLOW_FACTOR;
