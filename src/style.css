@@ -116,6 +116,15 @@ body {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.125);
 }
 
+.duck_container::after {
+  border-radius: 50%;
+  border: 2px solid #f200ff;
+  width: 75px;
+  height: 75px;
+  display: block;
+  content: "";
+}
+
 .duck_container {
   border-radius: 100%;
   position: absolute;
@@ -144,7 +153,7 @@ body {
   transition: none;
 }
 
-#finish {  
+#finish {
   position: relative;
 }
 #mama {
@@ -211,7 +220,7 @@ button:hover {
   border: 2px solid #ffa500;
 }
 [data-state="startingJump"] {
-  border: 2px solid #FFF;
+  border: 2px solid #fff;
 }
 
 #hud {
@@ -227,7 +236,7 @@ button:hover {
   bottom: 0;
   left: 0.5rem;
   color: #502800;
-  font-family: 'Courier', 'Courier New', monospace;
+  font-family: "Courier", "Courier New", monospace;
   font-size: xx-small;
 }
 
@@ -254,12 +263,12 @@ button:hover {
   margin-right: 0.5rem;
 }
 .controls_icon.active {
-  opacity: 1.0;
+  opacity: 1;
 }
 
 .controls_header .controls_icon {
   margin-right: 0; /* to center text with image to align with icons below */
-  opacity: 1.0;
+  opacity: 1;
 }
 #a_p_right.active,
 #b_p_left.active {
@@ -267,18 +276,18 @@ button:hover {
 }
 .active #a_p_right,
 .active #b_p_left {
-  opacity: 1.0;
+  opacity: 1;
 }
 
 .joystick {
-  background-image: url('assets/img/joystick.png');
+  background-image: url("assets/img/joystick.png");
 }
 
 .arrow-up,
 .arrow-left,
 .arrow-right,
 .arrow-down {
-  background-image: url('assets/img/arrow.png');
+  background-image: url("assets/img/arrow.png");
 }
 .arrow-up {
   transform: rotate(270deg);
@@ -293,10 +302,10 @@ button:hover {
 
 /* This margin-left positions the labels well visually in the river */
 .controls_label {
-  margin-left: 0.5rem; 
+  margin-left: 0.5rem;
 }
 
 .active .controls_icon,
 .active .controls_label {
-  opacity: 1.0;
+  opacity: 1;
 }
