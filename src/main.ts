@@ -579,16 +579,12 @@ const updateDucksDOM = () => {
       // duck.spriteElement.style.transform  = `translateY(${duck.y}px) translateX(${duck.x}px)`;
     }
 
+    // Figure out what # of ducks this is
+    // For each #, figure out placement of duck
     if (duck.state === "finished") {
       duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
     }
-
-    // if (duck.state === "startingJump") {
-    //   duck.element.style.transform = `translateX(${duck.x}px) translateY(${duck.y}px)`;
-    // }
-    // else if (duck.state !== 'jumping' && duck.x === currPlat.x) {
-
-    // }
+    duck.element.dataset.state = duck.state;
   }
   if (garbage.length > 0) {
     ducksState.ducks = ducksState.ducks.filter(
@@ -606,10 +602,6 @@ function update() {
   handleControls();
   handleDucks();
   updateDOM();
-
-  // debug
-  // console.log(JSON.stringify(currentState));
-  // console.log(JSON.stringify(platformState));
 
   requestAnimationFrame(update);
 }
