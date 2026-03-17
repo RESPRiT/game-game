@@ -108,8 +108,8 @@ const ducksState: {
 
 // duck constants
 const JUMP_DISTANCE = PLATFORM_SIZE + PLATFORM_SIZE / 2; //27.5
-const SPAWN_X = -30;
-const SPAWN_Y = 10;
+const SPAWN_X = -44;
+const SPAWN_Y = 5;
 //---------
 // HELPERS
 
