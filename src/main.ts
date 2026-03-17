@@ -21,7 +21,7 @@ let gameStarted = false;
 
 /// current constants
 // bounds
-const MAX_POSITION = 300;
+const MAX_POSITION = 189;
 const MAX_VELOCITY = 15;
 const MAX_ACCELERATION = 1;
 const MAX_FLOW = 3;
@@ -29,7 +29,7 @@ const RIVER_VELOCITY = 0.2;
 const RIVER_WIDTH = 252;
 const RIVER_HEIGHT = 262;
 const LAND_WIDTH = 42;
-const CURRENT_WIDTH = RIVER_WIDTH / 4;
+const CURRENT_WIDTH = RIVER_WIDTH / 4; //63
 
 // how much rotating the spinner changes acceleration/flow
 const ACCELERATION_FACTOR = 0.01;
@@ -42,6 +42,7 @@ const DEFLOW_FACTOR = 0.95;
 
 const currentState = {
   position: 0,
+  x: 0,
   velocity: 0,
   acceleration: 0,
   flow: 1,
@@ -165,7 +166,7 @@ const handleCurrent = () => {
   if (flowSpinnerDelta > 0) {
     currentState.flow += Math.max(
       0,
-      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 2,
+      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 4,
     );
   } else {
     currentState.flow *= DEFLOW_FACTOR;
@@ -363,21 +364,17 @@ const tryToJump = (duck: DuckProps) => {
       continue;
     }
 
-    // If the platform is to the left of the duck, ignore platform
-    if (duck.x > platform.x || duck.y + PLATFORM_SIZE < platform.y) {
-      if (duck.x > platform.x) {
-        // console.log(`duck ${duck.id} is to the right of platform ${platform.id}`)
-      } else {
-        //console.log(`duck ${duck.id} is above platform ${platform.id}`);
-      }
-      // console.log(
-      //   `duck #${duck.element.innerText} x: ${duck.x} > platform #${i} x: ${platform.x}`,
-      // );
+    if (
+      platform.y < duck.y - JUMP_DISTANCE ||
+      platform.y > duck.y + PLATFORM_SIZE ||
+      platform.x < duck.x ||
+      duck.x + JUMP_DISTANCE < platform.x
+    ) {
+      console.log("RETURNING");
       continue;
     }
     //TODO: we maybe shouldn't have ducks jump up stream very far?
     // if so we would need to place some sort of limit on the distanceY they can go
-    const duckX = duck.state === "waiting" ? duck.x - SPAWN_X : duck.x;
     const platformRadius = PLATFORM_SIZE / 2;
     const distanceX = duck.x + JUMP_DISTANCE - (platform.x + platformRadius);
 
@@ -415,13 +412,13 @@ const tryToJump = (duck: DuckProps) => {
   }
 
   if (closestDistance > JUMP_DISTANCE) {
-    console.log(
-      "distance tooo far to platform",
-      closestDistance,
-      "x.y",
-      closePlatform?.x,
-      closePlatform?.y,
-    );
+    // console.log(
+    //   "distance tooo far to platform",
+    //   closestDistance,
+    //   "x.y",
+    //   closePlatform?.x,
+    //   closePlatform?.y,
+    // );
 
     return;
   }
@@ -505,7 +502,7 @@ const handleDucks = () => {
 // DOM LOGIC
 
 const updateDOM = () => {
-  current.style.transform = `translateX(${currentState.position}%)`;
+  current.style.transform = `translateX(${currentState.position}px)`;
   flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
   cursor_container.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
   updatePlatformsDOM();
@@ -523,7 +520,19 @@ const updatePlatformsDOM = () => {
       continue;
     }
     const element = platform.element;
-    platform.y += RIVER_VELOCITY;
+    const prevY = platform.y;
+    const middleOfPlatform = platform.x + PLATFORM_SIZE / 2;
+    //if platform is in current
+    let newY = prevY + RIVER_VELOCITY;
+    if (
+      middleOfPlatform >= currentState.position &&
+      middleOfPlatform <= currentState.position + CURRENT_WIDTH
+    ) {
+      platform.y += currentState.flow;
+    } else {
+      platform.y += RIVER_VELOCITY;
+    }
+
     element!.style.transform = `translateX(${platform.x}px) translateY(${platform.y}px)`;
   }
   if (garbage.length > 0) {
