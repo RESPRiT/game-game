@@ -164,7 +164,7 @@ body {
   height: 32px;
   position: absolute;
   top: 8px;
-  left: 0;
+  left: 6px;
   transform: scaleX(-1);
 }
 
@@ -177,8 +177,8 @@ body {
   0% {
     transform: translateY(0px);
   }
-  25% {
-    transform: translateY(-4px) scaleX(-1);
+ 25% {
+   transform: translateY(-4px) scaleX(-1);
   }
   50% {
     transform: translateY(0px);

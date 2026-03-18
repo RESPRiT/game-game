@@ -1,14 +1,19 @@
-INTRO
+GENERAL
+- [~] Request for testing
 
+INTRO
+- [x] C: Title screen design
 - [ ] C: Instruction screen
-  - Add spinner directions
-  - Maybe interactive?
-    played before skip, otherwise show controls
+- [ ] C: Add spinner directions
+	- by default, current does nothing
+	- if right spinner turns right, that increases current
+	- if right spinner turns left, that decreases current
+	- current speed stays at last right spinner value so player 2 has to keep adjusting the speed
 
 RIVER & PLATFORMS (Matt/C)
-
 - [x] Move platforms with river
 - [ ] Matt: Move platforms with current
+<<<<<<< HEAD
   - [x] Check x positions to within half the width/radius
         if a platforms center is on or to the right of the current or if the platform center is to the left of the right of the current
   - Toggle class "isInCurrent" Not sure?
@@ -17,10 +22,15 @@ RIVER & PLATFORMS (Matt/C)
   - [x] Make current section move at the different rate
   - [] Make current look like it's moving at a different rate
   - [x]Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
+=======
+  - Check x positions to within half the width/radius 
+  - Toggle class "isInCurrent"
+  - For those inCurrent affect velocity
+  - Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
+>>>>>>> 9da4103e9994eca204f821f64bf2d5116177b76b
 - [x] C: Update platform graphics
 
 DUCKS (Harrison)
-
 - [x] Add entities
 - [x] Move when platform is near
 - [x] Duck end state
@@ -29,12 +39,14 @@ DUCKS (Harrison)
 - [x] Matt: Duck jump/no jump logic needs to be updated
 
 GAME LOOP
-
-- [ ] Goes on indefinitely?
+- [ ] Goes on indefinitely? 
 - [ ] Does this get harder with each duck crossed?
 - [ ] Quit to reset?
 
 GRAPHICS/UI
-
-- [ ] Add river current graphics
+- [x] Matt: Add river current graphics
   - Use tiled background images with positions that change
+- [ ] Improve river current graphics
+  - Ripple effect ot BG
+  - Move ripples up / down with current
+- [ ] C: Add indicators for spinners on current
