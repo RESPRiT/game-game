@@ -131,11 +131,9 @@ const handleCurrent = () => {
   active?.classList.remove("active")
 
   if (leftSpinnerDelta !== 0) {
-    console.log("Spinner 1")
     document.getElementById('spinner_left')?.classList.add("active");
   }
   if (rightSpinnerDelta !== 0) {
-    console.log("Spinner 2")
     document.getElementById('spinner_right')?.classList.add("active");
   }
 
