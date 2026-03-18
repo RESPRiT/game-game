@@ -1,8 +1,8 @@
 GENERAL
-- [ ] Request for testing
+- [~] Request for testing
 
 INTRO
-- [ ] C: Title screen design
+- [x] C: Title screen design
 - [ ] C: Instruction screen
 - [ ] C: Add spinner directions
 	- by default, current does nothing
@@ -24,8 +24,8 @@ DUCKS (Harrison)
 - [x] Move when platform is near
 - [x] Duck end state
 - [ ] C: Duck placement (1-5 at end state)
-- [ ] Ducks can't jump on top of each other
-- [ ] Matt: Duck jump/no jump logic needs to be updated
+- [x] Ducks can't jump on top of each other
+- [x] Matt: Duck jump/no jump logic needs to be updated
 
 GAME LOOP
 - [ ] Goes on indefinitely? 
