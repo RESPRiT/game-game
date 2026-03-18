@@ -610,7 +610,6 @@ const updateDucksDOM = () => {
   ducks_finished = ducksState.ducks.filter(
     (duck, _) => duck.state === "finished"
   ).length;
-  console.log(ducks_finished);
 };
 
 //------------------
@@ -626,4 +625,5 @@ function update() {
   requestAnimationFrame(update);
 }
 
+spawnDuck();
 update();
