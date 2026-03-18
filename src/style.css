@@ -167,7 +167,7 @@ body {
   color: black;
 }
 .duck_sprite {
-  background-image: url("/assets/img/ducklings_single.png");
+  background-image: url("../assets/img/ducklings_single.png");
   background-size: 350%;
   background-position: bottom;
   image-rendering: pixelated;
@@ -183,7 +183,7 @@ body {
   position: relative;
 }
 #mama {
-  background-image: url("/assets/img/mama_duck_still.png");
+  background-image: url("../assets/img/mama_duck_still.png");
   background-size: 150%;
   background-position: bottom;
   image-rendering: pixelated;
@@ -311,14 +311,14 @@ button:hover {
 }
 
 .joystick {
-  background-image: url("assets/img/joystick.png");
+  background-image: url("../assets/img/joystick.png");
 }
 
 .arrow-up,
 .arrow-left,
 .arrow-right,
 .arrow-down {
-  background-image: url("assets/img/arrow.png");
+  background-image: url("../assets/img/arrow.png");
 }
 .arrow-up {
   transform: rotate(270deg);
@@ -361,12 +361,12 @@ button:hover {
   z-index: 1;
 }
 .dual-arrows-lr {
-  background-image: url("assets/img/dual-arrow.png");
+  background-image: url("../assets/img/dual-arrow.png");
 }
 .dual-arrows-ud {
-  background-image: url("assets/img/dual-arrow.png");
+  background-image: url("../assets/img/dual-arrow.png");
   transform: rotate(90deg);
 }
 .spinner {
-  background-image: url("assets/img/spinner.png");
+  background-image: url("../assets/img/spinner.png");
 }
