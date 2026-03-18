@@ -75,6 +75,8 @@ body {
 #flow.up {
   background-image: url("../assets/img/waves-up.png");
   animation: animateUp infinite 0.5s linear;
+  top: auto;
+  bottom: 0;
 }
 
 @keyframes animateDown {

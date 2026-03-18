@@ -507,7 +507,18 @@ const handleDucks = () => {
 
 const updateDOM = () => {
   current.style.transform = `translateX(${currentState.position}px)`;
-  flow.style.height = `${((currentState.flow - 1) / (MAX_FLOW - 1)) * 100}%`;
+
+  // Flow default = 1, match river
+  // < 1 Flow = reverse
+  // flow === 1 = nothing
+  // > 1 Flow = faster
+  console.log(currentState.flow, `${Math.abs(((currentState.flow - 1))) * 100}%`);
+  if (currentState.flow < 1) {
+    flow.classList.add("up");
+  } else {
+    flow.classList.remove("up");
+  }
+  flow.style.height = `${Math.abs(((currentState.flow - 1))) * 100}%`;
   cursor_container.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
   updatePlatformsDOM();
   updateDucksDOM();
