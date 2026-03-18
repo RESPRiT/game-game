@@ -1,11 +1,11 @@
 {
   "$schema": "https://rcade.dev/manifest.schema.json",
   "name": "game-game",
-  "display_name": "!No Quack Left Behind!",
-  "description": "Use the joysticks and spinners to get the ducklings reach the other side.",
+  "display_name": "! No Quack Left Behind !",
+  "description": "Use the joysticks and spinners to get the ducklings to the other side.",
   "visibility": "public",
   "authors": {
-    "display_name": "Matt, c, Harrison - inspired by Natali Koromoto"
+    "display_name": "Matt & c & Harrison - inspired by Natali Koromoto"
   },
   "dependencies": [
     {
