@@ -512,7 +512,6 @@ const updateDOM = () => {
   // < 1 Flow = reverse
   // flow === 1 = nothing
   // > 1 Flow = faster
-  console.log(currentState.flow, `${Math.abs(((currentState.flow - 1))) * 100}%`);
   if (currentState.flow < 1) {
     flow.classList.add("up");
   } else {
@@ -566,6 +565,8 @@ function getPlatform(id: number): PlatformProps | undefined {
   return platformState.platformsInRiver.find((platform) => platform.id === id);
 }
 
+
+let ducks_finished = 0;
 const updateDucksDOM = () => {
   const garbage: number[] = [];
   const ducks = ducksState.ducks;
@@ -597,7 +598,7 @@ const updateDucksDOM = () => {
     // Figure out what # of ducks this is
     // For each #, figure out placement of duck
     if (duck.state === "finished") {
-      duck.element.style.transform = `translateY(${duck.y}px) translateX(${duck.x}px)`;
+      duck.element.style.transform = `translateY(${ducks_finished * 45}px) translateX(${duck.x}px)`;
     }
     duck.element.dataset.state = duck.state;
   }
@@ -606,6 +607,10 @@ const updateDucksDOM = () => {
       (duck, _) => !garbage.includes(duck.id),
     );
   }
+  ducks_finished = ducksState.ducks.filter(
+    (duck, _) => duck.state === "finished"
+  ).length;
+  console.log(ducks_finished);
 };
 
 //------------------
