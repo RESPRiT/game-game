@@ -109,7 +109,7 @@ const ducksState: {
 // duck constants
 const JUMP_DISTANCE = PLATFORM_SIZE + PLATFORM_SIZE / 2; //27.5
 const SPAWN_X = -44;
-const SPAWN_Y = 5;
+const SPAWN_Y = 0;
 //---------
 // HELPERS
 
@@ -126,6 +126,18 @@ const handleCurrent = () => {
   const leftSpinnerDelta = SPINNER_1.SPINNER.step_delta;
   //RIGHT SPINNER
   const rightSpinnerDelta = SPINNER_2.SPINNER.step_delta;
+
+  const active = document.querySelector("#current .active")
+  active?.classList.remove("active")
+
+  if (leftSpinnerDelta !== 0) {
+    console.log("Spinner 1")
+    document.getElementById('spinner_left')?.classList.add("active");
+  }
+  if (rightSpinnerDelta !== 0) {
+    console.log("Spinner 2")
+    document.getElementById('spinner_right')?.classList.add("active");
+  }
 
   // c v left spinner
   // . / right spinnner
@@ -196,7 +208,7 @@ const placePlatform = () => {
   const platform = document.createElement("div");
   platform.style.transform = `translateX(${newPlatform.x}px) translateY(${newPlatform.y}px)`;
   platform.className = "platform";
-  platform.innerText = "" + newPlatform.id;
+  // platform.innerText = "" + newPlatform.id;
   newPlatform["element"] = platform;
 
   platforms.appendChild(platform);
@@ -313,7 +325,7 @@ const spawnDuck = () => {
 
   duckEl.className = "duck_container";
   duckEl.style.transform = `translateX(${newDuck.x}px) translateY(${newDuck.y}px)`;
-  spriteEl.innerText = `${newDuck.id}`;
+  // spriteEl.innerText = `${newDuck.id}`;
   spriteEl.ontransitionstart = (event: TransitionEvent) => {
     console.log("Transition start", event.propertyName);
     if (event.propertyName === "top" || event.propertyName === "left") {

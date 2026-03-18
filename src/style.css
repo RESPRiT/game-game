@@ -56,7 +56,7 @@ body {
 }
 
 #current {
-  background-color: rgba(0, 72, 255, 0.25);
+  background-color: rgba(110, 181, 160, 0.5);
   transform: translateX(0%);
   width: 63px;
   height: 100%;
@@ -222,6 +222,9 @@ button:hover {
 [data-state="startingJump"] {
   border: 2px solid #fff;
 }
+.duck_container {
+  border: none;
+}
 
 #hud {
   position: absolute;
@@ -231,7 +234,8 @@ button:hover {
 }
 
 /* CONTROL SCHEME */
-#controls {
+#controls,
+#current .controls_row {
   position: absolute;
   bottom: 0;
   left: 0.5rem;
@@ -308,4 +312,33 @@ button:hover {
 .active .controls_icon,
 .active .controls_label {
   opacity: 1;
+}
+
+#current .controls_icon,
+#current .controls_label {
+  margin: 0;
+  text-align: center;
+  transition: all 0.125s ease-in-out;
+}
+#current .controls_row {
+  padding-top: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  left: 0;
+  top: 0;
+}
+.dual-arrows-lr {
+  background-image: url("assets/img/dual-arrow.png");
+}
+.dual-arrows-ud {
+  background-image: url("assets/img/dual-arrow.png");
+  transform: rotate(90deg);
+}
+.spinner {
+  background-image: url("assets/img/spinner.png");
 }
