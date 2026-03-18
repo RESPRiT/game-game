@@ -33,12 +33,12 @@ const CURRENT_WIDTH = RIVER_WIDTH / 4; //63
 
 // how much rotating the spinner changes acceleration/flow
 const ACCELERATION_FACTOR = 0.01;
-const FLOW_FACTOR = 0.1;
+const FLOW_FACTOR = 0.01;
 
 // multiply by this each frame to trend towards 0
 const DELOCITY_FACTOR = 0.95;
 const DECELERATION_FACTOR = 0.98;
-const DEFLOW_FACTOR = 0.95;
+const DEFLOW_FACTOR = 0.2;
 
 const currentState = {
   position: 0,
@@ -122,8 +122,10 @@ const clamp = (min: number, current: number, max: number) => {
 
 const handleCurrent = () => {
   // handle spinner inputs
-  const accelerationSpinnerDelta = SPINNER_1.SPINNER.step_delta;
-  const flowSpinnerDelta = SPINNER_2.SPINNER.step_delta;
+  //LEFT SPINNER
+  const leftSpinnerDelta = SPINNER_1.SPINNER.step_delta;
+  //RIGHT SPINNER
+  const rightSpinnerDelta = SPINNER_2.SPINNER.step_delta;
 
   // c v left spinner
   // . / right spinnner
@@ -131,8 +133,7 @@ const handleCurrent = () => {
   // bounded acceleration changed by spinner [-10, 10]
   currentState.acceleration = Math.min(
     Math.max(
-      currentState.acceleration +
-        accelerationSpinnerDelta * ACCELERATION_FACTOR,
+      currentState.acceleration + leftSpinnerDelta * ACCELERATION_FACTOR,
       -MAX_ACCELERATION,
     ),
     MAX_ACCELERATION,
@@ -163,15 +164,9 @@ const handleCurrent = () => {
   }
 
   // update flow - match spinner if spinning, otherwise trend to 1
-  if (flowSpinnerDelta > 0) {
-    currentState.flow += Math.max(
-      0,
-      (1 + flowSpinnerDelta * FLOW_FACTOR - currentState.flow) / 4,
-    );
-  } else {
-    currentState.flow *= DEFLOW_FACTOR;
+  if (rightSpinnerDelta !== 0) {
+    currentState.flow += rightSpinnerDelta * FLOW_FACTOR;
   }
-  currentState.flow = Math.min(Math.max(currentState.flow, 1), MAX_FLOW);
 };
 
 //----------------
@@ -370,7 +365,6 @@ const tryToJump = (duck: DuckProps) => {
       platform.x < duck.x ||
       duck.x + JUMP_DISTANCE < platform.x
     ) {
-      console.log("RETURNING");
       continue;
     }
     //TODO: we maybe shouldn't have ducks jump up stream very far?

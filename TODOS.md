@@ -14,8 +14,9 @@ RIVER & PLATFORMS (Matt/C)
   - Toggle class "isInCurrent" Not sure?
   - [x] For those inCurrent affect velocity
   - [x] River moves constantly
-  - [] Make current section move at the different rate
-  - Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
+  - [x] Make current section move at the different rate
+  - [] Make current look like it's moving at a different rate
+  - [x]Ensure current can slow down and speed up so that we can send baddies away or help ducks get on platforms
 - [x] C: Update platform graphics
 
 DUCKS (Harrison)
