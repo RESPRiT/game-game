@@ -35,6 +35,9 @@ const CURRENT_WIDTH = RIVER_WIDTH / 4; //63
 const ACCELERATION_FACTOR = 0.01;
 const FLOW_FACTOR = 0.01;
 
+const FLOW = 0.15;
+const BASE = FLOW; // 0.15
+
 // multiply by this each frame to trend towards 0
 const DELOCITY_FACTOR = 0.95;
 const DECELERATION_FACTOR = 0.98;
@@ -45,7 +48,7 @@ const currentState = {
   x: 0,
   velocity: 0,
   acceleration: 0,
-  flow: 1,
+  flow: 0,
   flowMultiplier: 1,
 };
 
@@ -127,14 +130,14 @@ const handleCurrent = () => {
   //RIGHT SPINNER
   const rightSpinnerDelta = SPINNER_2.SPINNER.step_delta;
 
-  const active = document.querySelector("#current .active")
-  active?.classList.remove("active")
+  const active = document.querySelector("#current .active");
+  active?.classList.remove("active");
 
   if (leftSpinnerDelta !== 0) {
-    document.getElementById('spinner_left')?.classList.add("active");
+    document.getElementById("spinner_left")?.classList.add("active");
   }
   if (rightSpinnerDelta !== 0) {
-    document.getElementById('spinner_right')?.classList.add("active");
+    document.getElementById("spinner_right")?.classList.add("active");
   }
 
   // c v left spinner
@@ -173,9 +176,11 @@ const handleCurrent = () => {
     currentState.acceleration = 0;
   }
 
-  // update flow - match spinner if spinning, otherwise trend to 1
-  if (rightSpinnerDelta !== 0) {
-    currentState.flow += rightSpinnerDelta * FLOW_FACTOR;
+  // update flow based on spinner input
+  if (rightSpinnerDelta > 0) {
+    currentState.flow = Math.min(currentState.flow + FLOW_FACTOR, MAX_FLOW);
+  } else if (rightSpinnerDelta < 0) {
+    currentState.flow = Math.max(currentState.flow - FLOW_FACTOR, -MAX_FLOW);
   }
 };
 
@@ -505,25 +510,50 @@ const handleDucks = () => {
 //-----------
 // DOM LOGIC
 
-const updateDOM = () => {
+const updateDOM = (timestamp: number) => {
   current.style.transform = `translateX(${currentState.position}px)`;
 
   // Flow default = 1, match river
   // < 1 Flow = reverse
   // flow === 1 = nothing
   // > 1 Flow = faster
-  if (currentState.flow < 1) {
+  if (currentState.flow < 0) {
     flow.classList.add("up");
   } else {
     flow.classList.remove("up");
   }
-  flow.style.height = `${Math.abs(((currentState.flow - 1))) * 100}%`;
+
   cursor_container.style.transform = `translateX(${platformState.x}px) translateY(${platformState.y}px)`;
-  updatePlatformsDOM();
+
+  // Capture elapsed before updatePlatformsDOM overwrites lastTime
+  const elapsed = lastTime ? (timestamp - lastTime) / 1000 : 0;
+  updatePlatformsDOM(timestamp);
+
+  // Scroll flow background manually — direction and speed directly from flow value
+  flowBgY = (flowBgY + currentState.flow * FLOW_PX_PER_SECOND * elapsed) % 24;
+  flow.style.backgroundPositionY = `${flowBgY}px`;
+
   updateDucksDOM();
 };
 
-const updatePlatformsDOM = () => {
+// 24px tile at BASE duration (0.15s) = 160px/s at flow=1.0
+const FLOW_PX_PER_SECOND = 24 / BASE;
+
+function getPixelsPerSecond() {
+  return Math.abs(currentState.flow) * FLOW_PX_PER_SECOND;
+}
+
+let lastTime: number = 0;
+let flowBgY = 0;
+
+const updatePlatformsDOM = (timestamp: number) => {
+  if (!lastTime) lastTime = timestamp;
+  const elapsed = (timestamp - lastTime) / 1000; // convert ms → seconds
+  lastTime = timestamp;
+
+  const pxPerSecond = getPixelsPerSecond();
+  const delta = pxPerSecond * elapsed; // pixels to move this frame
+
   const garbage: number[] = [];
   const platforms = platformState.platformsInRiver;
   for (let i = 0; i < platforms.length; i++) {
@@ -536,13 +566,17 @@ const updatePlatformsDOM = () => {
     const element = platform.element;
     const prevY = platform.y;
     const middleOfPlatform = platform.x + PLATFORM_SIZE / 2;
+
     //if platform is in current
-    let newY = prevY + RIVER_VELOCITY;
     if (
       middleOfPlatform >= currentState.position &&
       middleOfPlatform <= currentState.position + CURRENT_WIDTH
     ) {
-      platform.y += currentState.flow;
+        if (currentState.flow < 0) {
+        platform.y -= delta;
+      } else if (currentState.flow > 0) {
+        platform.y += delta;
+      }
     } else {
       platform.y += RIVER_VELOCITY;
     }
@@ -564,7 +598,6 @@ const updatePlatformsDOM = () => {
 function getPlatform(id: number): PlatformProps | undefined {
   return platformState.platformsInRiver.find((platform) => platform.id === id);
 }
-
 
 let ducks_finished = 0;
 const updateDucksDOM = () => {
@@ -608,22 +641,22 @@ const updateDucksDOM = () => {
     );
   }
   ducks_finished = ducksState.ducks.filter(
-    (duck, _) => duck.state === "finished"
+    (duck, _) => duck.state === "finished",
   ).length;
 };
 
 //------------------
 // MAIN UPDATE LOOP
 
-function update() {
+function update(timestamp: number) {
   handleCurrent();
   handlePlatforms();
   handleControls();
   handleDucks();
-  updateDOM();
+  updateDOM(timestamp);
 
   requestAnimationFrame(update);
 }
 
 spawnDuck();
-update();
+requestAnimationFrame(update);
