@@ -50,6 +50,7 @@ body {
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 0 100%;
   }
@@ -72,6 +73,7 @@ body {
   width: 100%;
   height: 100%;
 }
+
 #flow.up {
   background-image: url("../assets/img/waves-up.png");
 }
@@ -84,6 +86,7 @@ body {
   left: 0;
   transform: translateX(0) translateY(0);
 }
+
 #cursor,
 .platform {
   background-image: url("../assets/img/lilypad.png");
@@ -92,7 +95,8 @@ body {
   width: 50px;
   height: 50px;
   transform: scale(1) translateX(0) translateY(-5px);
-  opacity: 0.75; /* debug */
+  opacity: 0.75;
+  /* debug */
 }
 
 #cursor.isPlacing {
@@ -122,6 +126,7 @@ body {
   height: 45px;
   opacity: 1;
 }
+
 /*
 .duck_container::after {
   border-radius: 50%;
@@ -147,6 +152,7 @@ body {
   text-align: center;
   color: black;
 }
+
 .duck_sprite {
   background-image: url("../assets/img/ducklings_single.png");
   background-size: 350%;
@@ -163,6 +169,7 @@ body {
 #finish {
   position: relative;
 }
+
 #mama {
   background-image: url("../assets/img/mama_duck_still.png");
   background-size: 150%;
@@ -181,16 +188,20 @@ body {
   animation-name: hop;
   animation-duration: 0.7s;
 }
+
 @keyframes hop {
   0% {
     transform: translateY(0px);
   }
+
   25% {
     transform: translateY(-4px) scaleX(-1);
   }
+
   50% {
     transform: translateY(0px);
   }
+
   100% {
     transform: translateY(-8px) scaleX(-1);
   }
@@ -218,18 +229,23 @@ button:hover {
 [data-state="waiting"] {
   border: 2px solid #ff4500;
 }
+
 [data-state="jumping"] {
   border: 2px solid #008000;
 }
+
 [data-state="crossing"] {
   border: 2px solid #ff69b4;
 }
+
 [data-state="finished"] {
   border: 2px solid #ffa500;
 }
+
 [data-state="startingJump"] {
   border: 2px solid #fff;
 }
+
 .duck_container {
   border: none;
 }
@@ -259,14 +275,18 @@ button:hover {
   align-items: center;
   padding-bottom: 0.5rem;
 }
-.controls_header > div {
+
+.controls_header>div {
   text-align: center;
-  margin-right: 0.5rem; /* to center text with image to align with icons below */
+  margin-right: 0.5rem;
+  /* to center text with image to align with icons below */
 }
+
 .controls_icon,
 .controls_label {
-  opacity: 0.5;
+  opacity: 0.25;
 }
+
 .controls_icon {
   width: 8px;
   height: 8px;
@@ -274,18 +294,22 @@ button:hover {
   image-rendering: pixelated;
   margin-right: 0.5rem;
 }
+
 .controls_icon.active {
   opacity: 1;
 }
 
 .controls_header .controls_icon {
-  margin-right: 0; /* to center text with image to align with icons below */
+  margin-right: 0;
+  /* to center text with image to align with icons below */
   opacity: 1;
 }
+
 #a_p_right.active,
 #b_p_left.active {
   opacity: 0.75;
 }
+
 .active #a_p_right,
 .active #b_p_left {
   opacity: 1;
@@ -301,12 +325,15 @@ button:hover {
 .arrow-down {
   background-image: url("../assets/img/arrow.png");
 }
+
 .arrow-up {
   transform: rotate(270deg);
 }
+
 .arrow-down {
   transform: rotate(90deg);
 }
+
 .arrow-left {
   transform: rotate(180deg);
   transform-origin: 4px 4px;
@@ -325,12 +352,14 @@ button:hover {
 #current .controls_row {
   text-align: center;
 }
+
 #current .controls_icon,
 #current .controls_label {
   margin: 0;
   text-align: center;
   transition: all 0.125s ease-in-out;
 }
+
 #current .controls_row {
   padding-top: 0.5rem;
   padding-left: 0.75rem;
@@ -344,22 +373,29 @@ button:hover {
   top: 0;
   z-index: 1;
 }
-#spinner_left, #spinner_right {
+
+#spinner_left,
+#spinner_right {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-bottom: 0.25rem;
 }
-#spinner_left > div, #spinner_right > div {
+
+#spinner_left>div,
+#spinner_right>div {
   text-align: center;
 }
+
 .dual-arrows-lr {
   background-image: url("../assets/img/dual-arrow.png");
 }
+
 .dual-arrows-ud {
   background-image: url("../assets/img/dual-arrow.png");
   transform: rotate(90deg);
 }
+
 .spinner {
   background-image: url("../assets/img/spinner.png");
 }
